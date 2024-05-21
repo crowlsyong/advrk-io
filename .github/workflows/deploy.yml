@@ -30,6 +30,8 @@ jobs:
       - name: Run linter
         run: deno lint
 
+      - name: Run tests
+        run: deno test -A
 
   deploy:
     name: Deploy
@@ -46,8 +48,10 @@ jobs:
           deno-version: v1.x
 
       - name: Build step
-        run: deno task build --unstable-kv
+        run: deno task build --unstable
 
       - name: Upload to Deno Deploy
+        env:
+          DENO_DEPLOY_TOKEN: ${{ secrets.DENO_DEPLOY_TOKEN }}
         run: |
           deployctl deploy --project=advrk.io --entrypoint=./main.ts --token=${DENO_DEPLOY_TOKEN} --unstable
