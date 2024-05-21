@@ -39,8 +39,11 @@ export const handler: Handlers = {
     console.log(`Update result: ${success}`);
 
     if (success) {
+      console.log(`URL successfully updated for ID: ${id}`);
       return new Response("URL updated", { status: 200 });
+    } else {
+      console.error(`Failed to update URL for ID: ${id}`);
+      return new Response("URL not found", { status: 404 });
     }
-    return new Response("URL not found", { status: 404 });
   },
 };
