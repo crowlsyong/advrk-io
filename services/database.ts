@@ -2,7 +2,7 @@
 
 import { z } from "zod";
 
-export const kv = await Deno.openKv("https://api.deno.com/databases/9ba06aea-2d94-4499-9213-57727ac2ba88/connect");
+export const kv = await Deno.openKv();
 export const urlSchema = z.object({
   originalUrl: z.string().url(),
   shortUrl: z.string(),
