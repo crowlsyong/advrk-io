@@ -3,7 +3,7 @@ import { Handlers } from "$fresh/server.ts";
 import { generateQRCode } from "../../utils/qrCode.ts";
 
 export const handler: Handlers = {
-  async GET(req, ctx) {
+  async GET(_req, ctx) {
     const { id } = ctx.params;
     const url = `http://localhost:8000/${id}`;
     const qrCode = await generateQRCode(url);
