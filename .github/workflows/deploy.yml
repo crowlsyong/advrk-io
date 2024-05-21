@@ -1,33 +1,55 @@
-name: Deploy
+name: Deno CI/CD
+
 on:
   push:
-    branches: [main]
+    branches: ["main"]
   pull_request:
-    branches: main
+    branches: ["main"]
+
+permissions:
+  contents: read
+  id-token: write  # Needed for auth with Deno Deploy
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@v1
+        with:
+          deno-version: v1.x
+
+      - name: Run linter
+        run: deno lint
+
+      - name: Run tests
+        run: deno test -A
+
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
-
-    permissions:
-      id-token: write # Needed for auth with Deno Deploy
-      contents: read # Needed to clone the repository
+    needs: test
 
     steps:
-      - name: Clone repository
+      - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Install Deno
+      - name: Setup Deno
         uses: denoland/setup-deno@v1
         with:
-          deno-version: v1.43.5
+          deno-version: v1.x
 
       - name: Build step
-        run: "deno task build --unstable-kv --allow-net --allow-env" # 📝 Update the build command(s) if necessary
+        env:
+          DENO_DEPLOY_TOKEN: ${{ secrets.DENO_DEPLOY_TOKEN }}
+        run: deno task build --unstable
 
       - name: Upload to Deno Deploy
-        uses: denoland/deployctl@v1
-        with:
-          project: "advrk.io" # 📝 Update the deploy project name if necessary
-          entrypoint: "./main.ts" # 📝 Update the entrypoint if necessary
+        env:
+          DENO_DEPLOY_TOKEN: ${{ secrets.DENO_DEPLOY_TOKEN }}
+        run: |
+          deployctl deploy --project=advrk.io --entrypoint=./main.ts --token=${DENO_DEPLOY_TOKEN} --unstable
