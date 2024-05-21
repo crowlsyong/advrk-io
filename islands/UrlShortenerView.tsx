@@ -166,7 +166,7 @@ export default function UrlShortenerView(
             />
           ))}
         </div>
-        <div class="flex flex-col items-flex-end py-4 gap-2">
+        <div class="flex flex-col py-4 gap-2 sm:items-end">
         <button
           class="p-2 bg-red-600 text-white rounded disabled:opacity-50"
           onClick={archiveSelected}
@@ -188,7 +188,9 @@ export default function UrlShortenerView(
             View Archives
           </a>
         </div>
+
         </div>
+        
         <div class="pt-6 opacity-50 text-sm">
           <p>Initial data fetched in {props.latency}ms</p>
           <p class="flex gap-2">
