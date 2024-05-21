@@ -10,6 +10,8 @@ export const urlSchema = z.object({
 export type UrlSchema = z.infer<typeof urlSchema>;
 
 const BASE_URL = Deno.env.get("BASE_URL") || "http://advrk.io";
+// http://localhost:8000
+// http://advrk.io
 
 function generateShortId(length = 7) {
   const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -52,9 +54,20 @@ export async function getAllArchivedUrls(): Promise<Array<{ id: string } & UrlSc
   return urls;
 }
 
-export async function getUrl(id: string): Promise<UrlSchema | undefined> {
+export async function getUrlEntry(id: string): Promise<UrlSchema | undefined> {
   const entry = await kv.get(["url", id]);
   return entry.value as UrlSchema | undefined;
+}
+
+export async function getShortUrlEntry(shortUrl: string): Promise<UrlSchema | undefined> {
+  const it = kv.list({ prefix: ["url"] });
+  for await (const entry of it) {
+    const url = entry.value as UrlSchema;
+    if (url.shortUrl === shortUrl) {
+      return url;
+    }
+  }
+  return undefined;
 }
 
 export async function updateUrl(id: string, newShortUrl: string): Promise<boolean> {

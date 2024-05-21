@@ -1,32 +1,36 @@
-import { kv, createUrlEntry, getAllUrls, getUrl, updateUrl, archiveUrl, UrlSchema, getAllArchivedUrls, deleteUrl } from "./database.ts";
+import { kv, createUrlEntry, getAllUrls, updateUrl, archiveUrl, UrlSchema, getAllArchivedUrls, deleteUrl, getUrlEntry, getShortUrlEntry } from "./database.ts";
 
 export class ShortenerService {
-  static create(originalUrl: string): Promise<string> {
-    return createUrlEntry(originalUrl);
+  static async create(originalUrl: string): Promise<string> {
+    return await createUrlEntry(originalUrl);
   }
 
-  static getAll(): Promise<Array<{ id: string } & UrlSchema>> {
-    return getAllUrls();
+  static async getAll(): Promise<Array<{ id: string } & UrlSchema>> {
+    return await getAllUrls();
   }
 
-  static get(id: string): Promise<UrlSchema | undefined> {
-    return getUrl(id);
+  static async get(id: string): Promise<UrlSchema | undefined> {
+    return await getUrlEntry(id);
   }
 
-  static update(id: string, newShortUrl: string): Promise<boolean> {
-    return updateUrl(id, newShortUrl);
+  static async getShortUrlEntry(shortUrl: string): Promise<UrlSchema | undefined> {
+    return await getShortUrlEntry(shortUrl);
   }
 
-  static archive(id: string): Promise<boolean> {
-    return archiveUrl(id);
+  static async update(id: string, newShortUrl: string): Promise<boolean> {
+    return await updateUrl(id, newShortUrl);
   }
 
-  static getAllArchived(): Promise<Array<{ id: string } & UrlSchema>> {
-    return getAllArchivedUrls();
+  static async archive(id: string): Promise<boolean> {
+    return await archiveUrl(id);
   }
 
-  static delete(id: string): Promise<boolean> {
-    return deleteUrl(id);
+  static async getAllArchived(): Promise<Array<{ id: string } & UrlSchema>> {
+    return await getAllArchivedUrls();
+  }
+
+  static async delete(id: string): Promise<boolean> {
+    return await deleteUrl(id);
   }
 
   static async restore(id: string): Promise<boolean> {

@@ -62,15 +62,20 @@ export default function UrlShortenerView(
   const updateUrl = useCallback(async (id: string, newShortUrl: string) => {
     setAdding(true);
     try {
+      console.log(`Sending PUT request: id=${id}, shortUrl=${newShortUrl}`);
       const response = await axios.put(`${window.location.origin}/${id}`, {
-        shortUrl: newShortUrl,
+        id, // Ensure id is included
+        shortUrl: newShortUrl, // Properly include shortUrl
       });
       if (response.status === 200) {
+        console.log(`Response from PUT request: ${JSON.stringify(response.data)}`);
         setData((prevData) =>
           prevData.map((url) =>
             url.id === id ? { ...url, shortUrl: newShortUrl } : url
           )
         );
+      } else {
+        console.error(`Failed to update URL: ${response.status}`);
       }
     } catch (error) {
       console.error("Failed to update URL:", error);
@@ -78,6 +83,9 @@ export default function UrlShortenerView(
       setAdding(false);
     }
   }, []);
+  
+  
+  
 
   const archiveUrl = useCallback(async (id: string) => {
     setAdding(true);
@@ -168,6 +176,12 @@ export default function UrlShortenerView(
         </div>
         <div class="flex flex-col py-4 gap-2 sm:items-end">
         <button
+  class="p-2 border border-gray-500 text-black rounded"
+  onClick={() => window.location.href = '/data'}
+>
+  📊 Database
+</button>
+        <button
           class="p-2 bg-red-600 text-white rounded disabled:opacity-50"
           onClick={archiveSelected}
           disabled={selected.size === 0}
@@ -187,7 +201,9 @@ export default function UrlShortenerView(
           >
             View Archives
           </a>
+          
         </div>
+        
 
         </div>
         
@@ -242,22 +258,25 @@ function UrlItem({
     setEditing(true);
     setTimeout(() => inputRef.current?.focus(), 0);
   };
+const handleSave = () => {
+  const sanitizedEnding = sanitizeInput(newShortUrlEnding);
+  const baseUrl = url.shortUrl.split("/").slice(0, -1).join("/");
+  const newShortUrl = `${baseUrl}/${sanitizedEnding}`;
 
-  const handleSave = () => {
-    const sanitizedEnding = sanitizeInput(newShortUrlEnding);
-    const baseUrl = url.shortUrl.split("/").slice(0, -1).join("/");
-    const newShortUrl = `${baseUrl}/${sanitizedEnding}`;
+  // Check for duplicate short URLs
+  if (data.some((entry) => entry.shortUrl === newShortUrl && entry.id !== url.id)) {
+    setError("That one is already taken!");
+    return;
+  }
 
-    // Check for duplicate short URLs
-    if (data.some((entry) => entry.shortUrl === newShortUrl && entry.id !== url.id)) {
-      setError("That one is already taken!");
-      return;
-    }
+  console.log(`Updating URL: id=${url.id}, newShortUrl=${newShortUrl}`);
+  updateUrl(url.id, newShortUrl);
+  setEditing(false);
+  setError("");
+};
 
-    updateUrl(url.id, newShortUrl);
-    setEditing(false);
-    setError("");
-  };
+  
+  
 
   const handleCancel = () => {
     setNewShortUrlEnding(url.shortUrl.split("/").pop() || "");
