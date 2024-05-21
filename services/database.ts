@@ -11,7 +11,7 @@ export const urlSchema = z.object({
 });
 export type UrlSchema = z.infer<typeof urlSchema>;
 
-const BASE_URL = Deno.env.get("BASE_URL") || "http://localhost:8000";
+const BASE_URL = Deno.env.get("BASE_URL") || "http://advrk.io";
 
 function generateShortId(length = 7) {
   const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
