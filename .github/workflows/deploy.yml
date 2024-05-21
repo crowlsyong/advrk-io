@@ -24,7 +24,7 @@ jobs:
           deno-version: v1.43.5
 
       - name: Build step
-        run: "deno task build --unstable" # 📝 Update the build command(s) if necessary
+        run: "deno task build --unstable-kv" # 📝 Update the build command(s) if necessary
 
       - name: Upload to Deno Deploy
         uses: denoland/deployctl@v1
