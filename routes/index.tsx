@@ -1,25 +1,50 @@
-import { useSignal } from "@preact/signals";
-import Counter from "../islands/Counter.tsx";
+import { Handlers, PageProps } from "$fresh/server.ts";
+import UrlShortenerView from "../islands/UrlShortenerView.tsx";
 
-export default function Home() {
-  const count = useSignal(3);
+import { ShortenerService } from "../services/shortener.ts";
+
+export const handler: Handlers = {
+  async GET(req, ctx) {
+    const urls = await ShortenerService.getAll();
+    return ctx.render({ urls });
+  },
+  async POST(req, ctx) {
+    const { url } = await req.json();
+    await ShortenerService.create(url);
+    const urls = await ShortenerService.getAll();
+    return new Response(JSON.stringify({ urls }), {
+      status: 201,
+      headers: { "Content-Type": "application/json" },
+    });
+  },
+  async PUT(req, ctx) {
+    const { id, shortUrl } = await req.json();
+    const success = await ShortenerService.update(id, shortUrl);
+    if (success) {
+      const urls = await ShortenerService.getAll();
+      return new Response(JSON.stringify({ urls }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
+    } else {
+      return new Response("Not Found", { status: 404 });
+    }
+  },
+  async DELETE(req, ctx) {
+    const { id } = await req.json();
+    await ShortenerService.archive(id);
+    const urls = await ShortenerService.getAll();
+    return new Response(JSON.stringify({ urls }), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  },
+};
+
+export default function Home({ data }: PageProps) {
   return (
-    <div class="px-4 py-8 mx-auto bg-[#86efac]">
-      <div class="max-w-screen-md mx-auto flex flex-col items-center justify-center">
-        <img
-          class="my-6"
-          src="/logo.svg"
-          width="128"
-          height="128"
-          alt="the Fresh logo: a sliced lemon dripping with juice"
-        />
-        <h1 class="text-4xl font-bold">Welcome to Fresh</h1>
-        <p class="my-4">
-          Try updating this message in the super cool
-          <code class="mx-2">./routes/index.tsx</code> file, and rrrrrrrrrrrrrefresh.
-        </p>
-        <Counter count={count} />
-      </div>
+    <div>
+      <UrlShortenerView initialData={data.urls} latency={0} />
     </div>
   );
 }
