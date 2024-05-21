@@ -46,7 +46,7 @@ jobs:
           deno-version: v1.x
 
       - name: Build step
-        run: deno task build --unstable
+        run: deno task build --unstable-kv
 
       - name: Upload to Deno Deploy
         run: |
