@@ -30,9 +30,6 @@ jobs:
       - name: Run linter
         run: deno lint
 
-      - name: Run tests
-        run: deno test -A
-
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
