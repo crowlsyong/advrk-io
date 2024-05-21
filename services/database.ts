@@ -1,3 +1,5 @@
+/// <reference lib="deno.unstable" />
+
 import { z } from "zod";
 
 export const db = await Deno.openKv();
