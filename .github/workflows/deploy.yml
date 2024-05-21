@@ -45,10 +45,11 @@ jobs:
           deno-version: v1.x
 
       - name: Build step
-        run: deno task build --unstable
+        run: deno task build --unstable-kv
 
       - name: Upload to Deno Deploy
         env:
           DENO_DEPLOY_TOKEN: ${{ secrets.DENO_DEPLOY_TOKEN }}
+          DENO_KV_ACCESS_TOKEN: ${{ secrets.DENO_KV_ACCESS_TOKEN }}
         run: |
           deployctl deploy --project=advrk.io --entrypoint=./main.ts --token=${DENO_DEPLOY_TOKEN} --unstable
