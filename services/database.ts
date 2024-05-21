@@ -1,8 +1,6 @@
-/// <reference lib="deno.unstable" />
-
 import { z } from "zod";
 
-export const kv = await Deno.openKv(); // Using the default database
+export const kv = await Deno.openKv();
 
 export const urlSchema = z.object({
   originalUrl: z.string().url(),
@@ -62,16 +60,19 @@ export async function getUrl(id: string): Promise<UrlSchema | undefined> {
 export async function updateUrl(id: string, newShortUrl: string): Promise<boolean> {
   const entry = await kv.get(["url", id]);
   if (!entry.value) {
+    console.error(`No URL entry found for id: ${id}`);
     return false;
   }
   const updatedEntry: UrlSchema = { ...entry.value as UrlSchema, shortUrl: newShortUrl };
   await kv.set(["url", id], updatedEntry);
+  console.log(`Updated URL entry for id: ${id}, new short URL: ${newShortUrl}`);
   return true;
 }
 
 export async function archiveUrl(id: string): Promise<boolean> {
   const entry = await kv.get(["url", id]);
   if (!entry.value) {
+    console.error(`No URL entry found for id: ${id}`);
     return false;
   }
   const updatedEntry: UrlSchema = { ...entry.value as UrlSchema, archived: true };
@@ -82,6 +83,7 @@ export async function archiveUrl(id: string): Promise<boolean> {
 export async function deleteUrl(id: string): Promise<boolean> {
   const entry = await kv.get(["url", id]);
   if (!entry.value) {
+    console.error(`No URL entry found for id: ${id}`);
     return false;
   }
   await kv.delete(["url", id]);
