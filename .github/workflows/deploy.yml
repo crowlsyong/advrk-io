@@ -41,7 +41,7 @@ jobs:
           deno-version: v1.x
 
       - name: Install deployctl
-        run: deno install -A -f --unstable https://deno.land/x/deploy/deployctl.ts
+        run: deno install -A -f https://deno.land/x/deploy/deployctl.ts
 
       - name: Build step
         env:
