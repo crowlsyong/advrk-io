@@ -201,7 +201,7 @@ export default function UrlShortenerView(
               Source code
             </a>
             <a
-              href="https://github.com/denoland/showcase_todo"
+              href="https://github.com/crowlsyong/advrk-io"
               class="underline"
             >
               Adventure Rock
@@ -235,6 +235,7 @@ function UrlItem({
     url.shortUrl.split("/").pop() || "",
   );
   const [error, setError] = useState("");
+  const [copied, setCopied] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleEdit = () => {
@@ -272,69 +273,87 @@ function UrlItem({
     generateQrCode(url.id);
   };
 
+  const handleCopy = () => {
+    navigator.clipboard.writeText(url.shortUrl).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
 
   return (
     <div class="flex flex-col sm:flex-row p-4 gap-4 border-b border-gray-300 items-center">
-      <div class=" flex w-full gap-2">
-      <input
-        type="checkbox"
-        checked={selected}
-        onChange={() => toggleSelect(url.id)}
-        class="mr-2"
-      />
-      <div class="flex flex-col w-full font-mono">
+      <div class="flex w-full gap-2">
+        <input
+          type="checkbox"
+          checked={selected}
+          onChange={() => toggleSelect(url.id)}
+          class="mr-2"
+        />
+        <div class="flex flex-col w-full font-mono">
+          {!editing && (
+            <>
+              <a href={url.shortUrl} class="text-blue-600 hover:underline">
+                {url.shortUrl}
+              </a>
+              <p class="text-xs opacity-50 leading-loose">{url.originalUrl}</p>
+            </>
+          )}
+          {editing && (
+            <>
+              <span>{url.shortUrl.split("/").slice(0, -1).join("/")}/</span>
+              <input
+                class={`border rounded w-full py-2 px-3 mr-4 ${error ? "border-red-600" : ""}`}
+                value={newShortUrlEnding}
+                onInput={(e) => setNewShortUrlEnding((e.target as HTMLInputElement).value)}
+                ref={inputRef}
+              />
+              {error && <p class="text-red-600 text-xs">{error}</p>}
+            </>
+          )}
+        </div>
+      </div>
+      <div class="flex p-4 gap-2 items-center sm:flex-end">
         {!editing && (
-          <>
-            <a href={url.shortUrl} class="text-blue-600 hover:underline">
-              {url.shortUrl}
-            </a>
-            <p class="text-xs opacity-50 leading-loose">{url.originalUrl}</p>
-          </>
+          <button class="p-2 mr-2" onClick={handleEdit} title="Edit">
+            ✏️
+          </button>
         )}
         {editing && (
           <>
-            <span>{url.shortUrl.split("/").slice(0, -1).join("/")}/</span>
-            <input
-              class={`border rounded w-full py-2 px-3 mr-4 ${error ? "border-red-600" : ""}`}
-              value={newShortUrlEnding}
-              onInput={(e) => setNewShortUrlEnding((e.target as HTMLInputElement).value)}
-              ref={inputRef}
-            />
-            {error && <p class="text-red-600 text-xs">{error}</p>}
+            <button class="p-2 mr-2" onClick={handleSave} title="Save">
+              💾
+            </button>
+            <button class="p-2" onClick={handleCancel} title="Cancel">
+              🚫
+            </button>
           </>
         )}
-      </div>
-      </div>
-      <div class= "flex p-4 gap-2  items-center sm:flex-end">
-      {!editing && (
-        <button class="p-2 mr-2" onClick={handleEdit} title="Edit">
-          ✏️
+        <button
+          class="p-2 ml-2 border-2 border-black rounded"
+          onClick={handleGenerateQrCode}
+          title="Generate QR Code"
+        >
+          QR
         </button>
-      )}
-      {editing && (
-        <>
-          <button class="p-2 mr-2" onClick={handleSave} title="Save">
-            💾
-          </button>
-          <button class="p-2" onClick={handleCancel} title="Cancel">
-            🚫
-          </button>
-        </>
-      )}
-      <button
-        class="p-2 ml-2 border-2 border-black rounded"
-        onClick={handleGenerateQrCode}
-        title="Generate QR Code"
-      >
-        QR
-      </button>
-      <button
-        class="p-2 ml-2 bg-red-200 text-white rounded"
-        onClick={handleArchive}
-        title="Archive"
-      >
-        🗑️
-      </button>
+        <button
+          class="p-2 ml-2 bg-red-200 text-white rounded"
+          onClick={handleArchive}
+          title="Archive"
+        >
+          🗑️
+        </button>
+        <button
+          class="p-2 ml-2 bg-green-200 text-white rounded"
+          onClick={handleCopy}
+          title="Copy"
+        >
+          📋
+        </button>
+        {copied && (
+          <div class="text-xs text-green-500 ml-2">
+            Copied to clipboard!
+          </div>
+        )}
       </div>
     </div>
   );
