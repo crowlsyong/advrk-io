@@ -5,9 +5,6 @@
 /// <reference lib="deno.ns" />
 /// <reference lib="deno.unstable" />
 
-import { kv } from './services/database.ts';
-
-console.log('Database opened:', kv);
 
 import "$std/dotenv/load.ts";
 
