@@ -1,4 +1,4 @@
-import { db, createUrlEntry, getAllUrls, getUrl, updateUrl, archiveUrl, UrlSchema, getAllArchivedUrls, deleteUrl } from "./database.ts";
+import { kv, createUrlEntry, getAllUrls, getUrl, updateUrl, archiveUrl, UrlSchema, getAllArchivedUrls, deleteUrl } from "./database.ts";
 
 export class ShortenerService {
   static create(originalUrl: string): Promise<string> {
@@ -30,12 +30,12 @@ export class ShortenerService {
   }
 
   static async restore(id: string): Promise<boolean> {
-    const entry = await db.get(["url", id]);
+    const entry = await kv.get(["url", id]);
     if (!entry.value) {
       return false;
     }
     const updatedEntry: UrlSchema = { ...entry.value as UrlSchema, archived: false };
-    await db.set(["url", id], updatedEntry);
+    await kv.set(["url", id], updatedEntry);
     return true;
   }
 }
