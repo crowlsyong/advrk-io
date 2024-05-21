@@ -40,6 +40,9 @@ jobs:
         with:
           deno-version: v1.x
 
+      - name: Install deployctl
+        run: deno install -A -f --unstable https://deno.land/x/deploy/deployctl.ts
+
       - name: Build step
         env:
           DENO_DEPLOY_TOKEN: ${{ secrets.DENO_DEPLOY_TOKEN }}
