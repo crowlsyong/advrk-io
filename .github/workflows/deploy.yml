@@ -54,4 +54,4 @@ jobs:
           DENO_DEPLOY_TOKEN: ${{ secrets.DENO_DEPLOY_TOKEN }}
           DENO_KV_ACCESS_TOKEN: ${{ secrets.DENO_KV_ACCESS_TOKEN }}
         run: |
-          deployctl deploy --project=advrk.io --entrypoint=./main.ts --token=${DENO_DEPLOY_TOKEN}
+          deployctl deploy --project=advrk-io --entrypoint=./main.ts --token=${DENO_DEPLOY_TOKEN}
