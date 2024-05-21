@@ -45,7 +45,7 @@ jobs:
           deno-version: v1.x
 
       - name: Build step
-        run: deno task build --unstable-kv
+        run: deno task build --unstable-kv --allow-net --allow-env
 
       - name: Upload to Deno Deploy
         env:
