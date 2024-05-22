@@ -56,7 +56,7 @@ export default function Home({ data }: PageProps<Data>) {
             <h1 class="font-bold text-2xl mb-4">🧗 advrk.io</h1>
           </div>
       <div class="text-2xl mb-4">
-      You currently {data.isAllowed ? "are" : "are not"} logged in.
+      /u/usernamez
       </div>
       {!data.isAllowed ? <Login /> : <a href="/logout">Logout</a>}
     </div>

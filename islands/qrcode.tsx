@@ -12,7 +12,7 @@ const QRCode = ({ text }: QRCodeProps) => {
   useEffect(() => {
     const generateQRCode = async () => {
       const base64Image = await qrcode(text);
-      if (typeof base64Image === 'string') {
+      if (typeof base64Image === "string") {
         setSrc(base64Image);
       }
     };

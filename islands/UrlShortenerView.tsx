@@ -9,6 +9,8 @@ import IconDatabase from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/databas
 import IconArchive from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/archive.tsx";
 import IconDeviceFloppy from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/device-floppy.tsx";
 import IconArchiveFilled from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/archive-filled.tsx";
+import IconEdit from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/edit.tsx";
+
 interface UrlEntry {
   id: string;
   originalUrl: string;
@@ -47,6 +49,7 @@ export default function UrlShortenerView(
     });
   };
 
+  
   const addUrl = useCallback(async () => {
     let value = urlInput.current!.value;
     if (!value) return;
@@ -131,11 +134,11 @@ export default function UrlShortenerView(
   };
 
   return (
-    <div class="flex gap-2 w-full items-center justify-center py-8 xl:py-8 px-6">
-      <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
+    <div class="flex gap-2 w-full items-center justify-center py-8 px-4 sm:px-6 lg:px-8">
+      <div class="w-full max-w-4xl mx-auto sm:px-6 lg:px-8 bg-gray-100 border border-black rounded p-4">
         <div class="flex flex-col pb-4">
           <div class="flex flex-row gap-2 items-center">
-            <h1 class="font-bold text-xl">🤏 URL Shortener</h1>
+            <h1 class="font-bold text-xl m-4">🤏 URL Shortener</h1>
           </div>
           <div class="flex gap-2">
             <input
@@ -170,21 +173,19 @@ export default function UrlShortenerView(
           ))}
         </div>
         {qrCodeUrl && (
-          <div class="flex justify-center mt-4 relative">
-            <QrCodeGenerator url={qrCodeUrl} />
-            <button
-              class="absolute top-0 right-0 p-2 bg-red-500 text-white rounded"
-              onClick={() => setQrCodeUrl(null)}
-            >
-              Close
-            </button>
-          </div>
+          <QrCodeGenerator
+            shortUrl={qrCodeUrl}
+            originalUrl={data.find((entry) => entry.shortUrl === qrCodeUrl)
+              ?.originalUrl || ""}
+            onClose={() => setQrCodeUrl(null)}
+          />
         )}
+
         <div class="flex flex-col py-4 gap-2 sm:items-end">
           <div class="flex">
           </div>
           <button
-            class="p-2 bg-red-600 text-white rounded disabled:opacity-50 flex items-center"
+            class="text-sm p-2 rounded text-white bg-red-500 disabled:opacity-50 disabled:bg-gray-100 disabled:text-gray-500 flex items-center"
             onClick={archiveSelected}
             disabled={selected.size === 0}
           >
@@ -286,6 +287,13 @@ function UrlItem({
     });
   };
 
+  const getShortenedUrl = (url: string) => {
+    if (url.length > 40) {
+      return url.slice(0, 17) + '...';
+    }
+    return url;
+  };
+
   return (
     <div
       class={`flex flex-col sm:flex-row p-4 gap-4 border-b border-gray-300 items-center ${
@@ -299,15 +307,41 @@ function UrlItem({
           onChange={() => toggleSelect(url.id)}
           class="mr-2"
         />
-        <div class="flex flex-col w-full font-mono">
+        <div class="flex flex-col font-mono">
           {!editing && (
-            <>
-              <a href={url.shortUrl} class="text-blue-600 hover:underline">
-                {url.shortUrl}
+            <div class="flex items-center">
+              <a
+                href={url.shortUrl}
+                class="text-blue-600 hover:text-blue-500 hover:underline"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {getShortenedUrl(url.shortUrl)}
               </a>
-              <p class="text-xs opacity-50 leading-loose">{url.originalUrl}</p>
-            </>
+              <button
+                class="p-2 ml-2 rounded flex items-center text-blue-500 hover:text-blue-400 active:text-green-500"
+                onClick={handleCopy}
+                title="Copy"
+              >
+                <IconCopy />
+              </button>
+              {copied && (
+                <div class="text-xs ml-2 text-green-500">
+                  Copied to clipboard!
+                </div>
+              )}
+            </div>
           )}
+       <a 
+  href={url.originalUrl}
+  class="text-xs opacity-50 leading-loose hover:text-blue-500 hover:underline"
+  target="_blank"
+  rel="noopener noreferrer"
+>
+  {url.originalUrl.length > 40 ? url.originalUrl.slice(0, 40) + '...' : url.originalUrl}
+</a>
+
+
           {editing && (
             <>
               <span>{url.shortUrl.split("/").slice(0, -1).join("/")}/</span>
@@ -319,6 +353,7 @@ function UrlItem({
                 onInput={(e) =>
                   setNewShortUrlEnding((e.target as HTMLInputElement).value)}
                 ref={inputRef}
+                style={{ minWidth: "10ch" }} // Minimum width to prevent squishing
               />
               {error && <p class="text-red-600 text-xs">{error}</p>}
             </>
@@ -328,28 +363,35 @@ function UrlItem({
 
       <div class="flex p-4 gap-2 items-center sm:flex-end">
         {!editing && (
-          <button class="p-2 mr-2" onClick={handleEdit} title="Edit">
-            ✏️ Edit
+          <button
+            class="p-2 ml-2 bg-blue-200 rounded flex items-center"
+            onClick={handleEdit}
+            title="Edit"
+          >
+            <IconEdit />
           </button>
         )}
         {editing && (
           <>
             <button
-              class="p-2 mr-2 flex items-center"
+              class="p-2 mr-2 bg-blue-500 text-white rounded flex items-center"
               onClick={handleSave}
               title="Save"
             >
-              <IconDeviceFloppy class="mr-2" />
-              Save
+              <IconDeviceFloppy />
             </button>
 
-            <button class="p-2" onClick={handleCancel} title="Cancel">
+            <button
+              class="p-2 border-2 rounded"
+              onClick={handleCancel}
+              title="Cancel"
+            >
               ❌
             </button>
           </>
         )}
         <button
-          class="p-2 ml-2 border-2 border-black rounded flex items-center"
+          class="p-2 ml-2 bg-gray-200 rounded flex items-center"
           onClick={handleGenerateQrCode}
           title="Generate QR Code"
         >
@@ -363,21 +405,8 @@ function UrlItem({
         >
           <IconHttpDelete />
         </button>
-
-        <button
-          class="p-2 ml-2 bg-green-200 rounded flex items-center"
-          onClick={handleCopy}
-          title="Copy"
-        >
-          <IconCopy />
-        </button>
-
-        {copied && (
-          <div class="text-xs ml-2">
-            Copied to clipboard!
-          </div>
-        )}
       </div>
     </div>
   );
 }
+

@@ -7,7 +7,9 @@ interface UrlEntry {
   shortUrl: string;
 }
 
-export default function ArchivesView(props: { initialData: UrlEntry[]; latency: number }) {
+export default function ArchivesView(
+  props: { initialData: UrlEntry[]; latency: number },
+) {
   const [data, setData] = useState(props.initialData);
   const [selected, setSelected] = useState<Set<string>>(new Set());
 
@@ -24,14 +26,16 @@ export default function ArchivesView(props: { initialData: UrlEntry[]; latency: 
   };
 
   const deleteSelected = useCallback(async () => {
-    const confirmed = confirm("Are you sure you want to delete the selected items?");
+    const confirmed = confirm(
+      "Are you sure you want to delete the selected items?",
+    );
     if (!confirmed) return;
 
     try {
       for (const id of selected) {
         await axios.delete(window.location.href, { data: { id } });
       }
-      setData((prevData) => prevData.filter(url => !selected.has(url.id)));
+      setData((prevData) => prevData.filter((url) => !selected.has(url.id)));
       setSelected(new Set());
     } catch (error) {
       console.error("Failed to delete the URLs:", error);
@@ -39,14 +43,16 @@ export default function ArchivesView(props: { initialData: UrlEntry[]; latency: 
   }, [selected]);
 
   const restoreSelected = useCallback(async () => {
-    const confirmed = confirm("Are you sure you want to restore the selected items?");
+    const confirmed = confirm(
+      "Are you sure you want to restore the selected items?",
+    );
     if (!confirmed) return;
 
     try {
       for (const id of selected) {
         await axios.put(window.location.href, { id });
       }
-      setData((prevData) => prevData.filter(url => !selected.has(url.id)));
+      setData((prevData) => prevData.filter((url) => !selected.has(url.id)));
       setSelected(new Set());
     } catch (error) {
       console.error("Failed to restore the URLs:", error);
@@ -54,11 +60,11 @@ export default function ArchivesView(props: { initialData: UrlEntry[]; latency: 
   }, [selected]);
 
   return (
-    <div class="flex gap-2 w-full items-center justify-center py-8 xl:py-16 px-6">
-      <div class="rounded w-full xl:max-w-xl">
-        <div class="flex flex-col gap-4 pb-4">
+    <div class="flex gap-2 w-full items-center  justify-center py-8 px-4 sm:px-6 lg:px-8">
+      <div class="w-full max-w-4xl mx-auto sm:px-6 lg:px-8 bg-gray-100 border border-black rounded p-4">
+        <div class="flex flex-col pb-4">
           <div class="flex flex-row gap-2 items-center">
-            <h1 class="font-bold text-xl">Archives</h1>
+            <h1 class="font-bold text-xl mb-4">📁 Archive</h1>
           </div>
           <div class="flex gap-2">
             <button
@@ -79,11 +85,19 @@ export default function ArchivesView(props: { initialData: UrlEntry[]; latency: 
         </div>
         <div>
           {data.map((url) => (
-            <UrlItem key={url.id} url={url} selected={selected.has(url.id)} toggleSelect={toggleSelect} />
+            <UrlItem
+              key={url.id}
+              url={url}
+              selected={selected.has(url.id)}
+              toggleSelect={toggleSelect}
+            />
           ))}
         </div>
         <div class="flex gap-2">
-          <a href="/" class="p-2 bg-blue-600 text-white rounded text-center w-full">
+          <a
+            href="/"
+            class="p-2 bg-blue-600 text-white rounded text-center w-full"
+          >
             Back to Shortening
           </a>
         </div>
@@ -100,16 +114,29 @@ export default function ArchivesView(props: { initialData: UrlEntry[]; latency: 
   );
 }
 
-function UrlItem({ url, selected, toggleSelect }: { url: UrlEntry; selected: boolean; toggleSelect: (id: string) => void }) {
+function UrlItem(
+  { url, selected, toggleSelect }: {
+    url: UrlEntry;
+    selected: boolean;
+    toggleSelect: (id: string) => void;
+  },
+) {
   const handleSelect = () => {
     toggleSelect(url.id);
   };
 
   return (
-    <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
-      <input type="checkbox" checked={selected} onChange={handleSelect} class="mr-2" />
+    <div class="flex my-2 border-b border-gray-300 items-center h-16">
+      <input
+        type="checkbox"
+        checked={selected}
+        onChange={() => toggleSelect(url.id)}
+        class="mr-2"
+      />
       <div class="flex flex-col w-full font-mono">
-        <a href={url.shortUrl} class="text-blue-600 hover:underline">{url.shortUrl}</a>
+        <a href={url.shortUrl} class="text-blue-600 hover:underline">
+          {url.shortUrl}
+        </a>
         <p class="text-xs opacity-50 leading-loose">{url.originalUrl}</p>
       </div>
     </div>

@@ -7,11 +7,16 @@ import * as $_listId_ from "./routes/[listId].tsx";
 import * as $_404 from "./routes/_404.tsx";
 import * as $_app from "./routes/_app.tsx";
 import * as $api_joke from "./routes/api/joke.ts";
-import * as $archives from "./routes/archives.tsx";
+import * as $api_login from "./routes/api/login.ts";
+import * as $archive from "./routes/archive.tsx";
 import * as $data from "./routes/data.tsx";
 import * as $greet_name_ from "./routes/greet/[name].tsx";
 import * as $index from "./routes/index.tsx";
+import * as $logindex from "./routes/logindex.tsx";
+import * as $logout from "./routes/logout.ts";
 import * as $qr from "./routes/qr.tsx";
+import * as $s from "./routes/s.tsx";
+import * as $u_slugger_ from "./routes/u/[slugger].tsx";
 import * as $ArchiveView from "./islands/ArchiveView.tsx";
 import * as $Counter from "./islands/Counter.tsx";
 import * as $MenuBar from "./islands/MenuBar.tsx";
@@ -27,11 +32,16 @@ const manifest = {
     "./routes/_404.tsx": $_404,
     "./routes/_app.tsx": $_app,
     "./routes/api/joke.ts": $api_joke,
-    "./routes/archives.tsx": $archives,
+    "./routes/api/login.ts": $api_login,
+    "./routes/archive.tsx": $archive,
     "./routes/data.tsx": $data,
     "./routes/greet/[name].tsx": $greet_name_,
     "./routes/index.tsx": $index,
+    "./routes/logindex.tsx": $logindex,
+    "./routes/logout.ts": $logout,
     "./routes/qr.tsx": $qr,
+    "./routes/s.tsx": $s,
+    "./routes/u/[slugger].tsx": $u_slugger_,
   },
   islands: {
     "./islands/ArchiveView.tsx": $ArchiveView,
