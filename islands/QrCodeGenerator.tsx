@@ -31,7 +31,8 @@ const QrCodeGenerator = ({ url }: QrCodeGeneratorProps) => {
 
   const handleOpenImageInNewTab = () => {
     if (src) {
-      const newWindow = window.open();
+        const newWindow = globalThis.open();
+
       if (newWindow) {
         newWindow.document.write(`<img src="${src}" alt="QR Code" class="w-full h-full">`);
       }
