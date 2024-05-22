@@ -153,9 +153,8 @@ export default function UrlShortenerView(
             </button>
           </div>
         </div>
-        
-        <div> 
-      
+
+        <div>
           {data.map((url) => (
             <UrlItem
               key={url.id}
@@ -169,7 +168,6 @@ export default function UrlShortenerView(
               qrCodeUrl={qrCodeUrl}
             />
           ))}
-          
         </div>
         {qrCodeUrl && (
           <div class="flex justify-center mt-4 relative">
@@ -183,48 +181,28 @@ export default function UrlShortenerView(
           </div>
         )}
         <div class="flex flex-col py-4 gap-2 sm:items-end">
-        <button
-  class="p-2 border border-gray-500 text-black rounded flex items-center"
-  onClick={() => window.location.href = '/data'}
->
-  <IconDatabase class="mr-2" />
-  Database
-</button>
-
-<div class="flex">
-          <a
-  href="/archives"
-  class="p-2 text-red-500 rounded text-center w-full flex items-center"
->
-  <IconArchiveFilled class="mr-2" />
-  View Archives
-</a>
-
-          
-        </div>
-<button
-  class="p-2 bg-red-600 text-white rounded disabled:opacity-50 flex items-center"
-  onClick={archiveSelected}
-  disabled={selected.size === 0}
->
-  <IconArchive class="mr-2" />
-  Archive Selected
-</button>
-
-
-
+          <div class="flex">
+          </div>
+          <button
+            class="p-2 bg-red-600 text-white rounded disabled:opacity-50 flex items-center"
+            onClick={archiveSelected}
+            disabled={selected.size === 0}
+          >
+            <IconArchive class="mr-2" />
+            Archive Selected
+          </button>
         </div>
         <div class="pt-6 opacity-50 text-sm">
           <p>Initial data fetched in {props.latency}ms</p>
           <p class="flex gap-2">
             <a
-              href="https://github.com/denoland/showcase_todo"
+              href="https://github.com/crowlsyong/advrk-io"
               class="underline"
             >
               Source code
             </a>
             <a
-              href="https://github.com/crowlsyong/advrk-io"
+              href="https://adventurerock.com/"
               class="underline"
             >
               Adventure Rock
@@ -273,7 +251,11 @@ function UrlItem({
     const baseUrl = url.shortUrl.split("/").slice(0, -1).join("/");
     const newShortUrl = `${baseUrl}/${sanitizedEnding}`;
 
-    if (data.some((entry) => entry.shortUrl === newShortUrl && entry.id !== url.id)) {
+    if (
+      data.some((entry) =>
+        entry.shortUrl === newShortUrl && entry.id !== url.id
+      )
+    ) {
       setError("That one is already taken!");
       return;
     }
@@ -305,7 +287,11 @@ function UrlItem({
   };
 
   return (
-    <div class={`flex flex-col sm:flex-row p-4 gap-4 border-b border-gray-300 items-center ${qrCodeUrl === url.shortUrl ? 'bg-green-300' : ''}`}>
+    <div
+      class={`flex flex-col sm:flex-row p-4 gap-4 border-b border-gray-300 items-center ${
+        qrCodeUrl === url.shortUrl ? "bg-green-300" : ""
+      }`}
+    >
       <div class="flex w-full gap-2">
         <input
           type="checkbox"
@@ -326,9 +312,12 @@ function UrlItem({
             <>
               <span>{url.shortUrl.split("/").slice(0, -1).join("/")}/</span>
               <input
-                class={`border rounded w-full py-2 px-3 mr-4 ${error ? "border-red-600" : ""}`}
+                class={`border rounded w-full py-2 px-3 mr-4 ${
+                  error ? "border-red-600" : ""
+                }`}
                 value={newShortUrlEnding}
-                onInput={(e) => setNewShortUrlEnding((e.target as HTMLInputElement).value)}
+                onInput={(e) =>
+                  setNewShortUrlEnding((e.target as HTMLInputElement).value)}
                 ref={inputRef}
               />
               {error && <p class="text-red-600 text-xs">{error}</p>}
@@ -336,7 +325,7 @@ function UrlItem({
           )}
         </div>
       </div>
-      
+
       <div class="flex p-4 gap-2 items-center sm:flex-end">
         {!editing && (
           <button class="p-2 mr-2" onClick={handleEdit} title="Edit">
@@ -345,40 +334,43 @@ function UrlItem({
         )}
         {editing && (
           <>
-            <button class="p-2 mr-2 flex items-center" onClick={handleSave} title="Save">
-  <IconDeviceFloppy class="mr-2" />
-  Save
-</button>
+            <button
+              class="p-2 mr-2 flex items-center"
+              onClick={handleSave}
+              title="Save"
+            >
+              <IconDeviceFloppy class="mr-2" />
+              Save
+            </button>
 
             <button class="p-2" onClick={handleCancel} title="Cancel">
               ❌
             </button>
           </>
         )}
-       <button
-  class="p-2 ml-2 border-2 border-black rounded flex items-center"
-  onClick={handleGenerateQrCode}
-  title="Generate QR Code"
->
-  <IconQrcode />
-</button>
-
-        
-<button
-  class="p-2 ml-2 bg-red-200 rounded flex items-center"
-  onClick={handleArchive}
-  title="Archive"
->
-  <IconHttpDelete />
-</button>
+        <button
+          class="p-2 ml-2 border-2 border-black rounded flex items-center"
+          onClick={handleGenerateQrCode}
+          title="Generate QR Code"
+        >
+          <IconQrcode />
+        </button>
 
         <button
-  class="p-2 ml-2 bg-green-200 rounded flex items-center"
-  onClick={handleCopy}
-  title="Copy"
->
-  <IconCopy />
-</button>
+          class="p-2 ml-2 bg-red-200 rounded flex items-center"
+          onClick={handleArchive}
+          title="Archive"
+        >
+          <IconHttpDelete />
+        </button>
+
+        <button
+          class="p-2 ml-2 bg-green-200 rounded flex items-center"
+          onClick={handleCopy}
+          title="Copy"
+        >
+          <IconCopy />
+        </button>
 
         {copied && (
           <div class="text-xs ml-2">
