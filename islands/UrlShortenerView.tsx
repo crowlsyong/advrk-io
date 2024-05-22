@@ -131,8 +131,8 @@ export default function UrlShortenerView(
   };
 
   return (
-    <div class="flex gap-2 w-full items-center justify-center py-8 xl:py-16 px-6">
-      <div class="rounded w-full xl:max-w-xl gap-4">
+    <div class="flex gap-2 w-full items-center justify-center py-8 xl:py-8 px-6">
+      <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
         <div class="flex flex-col pb-4">
           <div class="flex flex-row gap-2 items-center">
             <h1 class="font-bold text-xl">🤏 URL Shortener</h1>

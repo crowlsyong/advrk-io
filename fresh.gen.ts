@@ -14,6 +14,7 @@ import * as $index from "./routes/index.tsx";
 import * as $qr from "./routes/qr.tsx";
 import * as $ArchiveView from "./islands/ArchiveView.tsx";
 import * as $Counter from "./islands/Counter.tsx";
+import * as $MenuBar from "./islands/MenuBar.tsx";
 import * as $QrCodeGenerator from "./islands/QrCodeGenerator.tsx";
 import * as $UrlShortenerView from "./islands/UrlShortenerView.tsx";
 import * as $qrcode from "./islands/qrcode.tsx";
@@ -35,6 +36,7 @@ const manifest = {
   islands: {
     "./islands/ArchiveView.tsx": $ArchiveView,
     "./islands/Counter.tsx": $Counter,
+    "./islands/MenuBar.tsx": $MenuBar,
     "./islands/QrCodeGenerator.tsx": $QrCodeGenerator,
     "./islands/UrlShortenerView.tsx": $UrlShortenerView,
     "./islands/qrcode.tsx": $qrcode,

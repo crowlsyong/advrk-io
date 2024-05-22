@@ -106,7 +106,7 @@ function UrlItem({ url, selected, toggleSelect }: { url: UrlEntry; selected: boo
   };
 
   return (
-    <div class="flex my-2 border-b border-gray-300 items-center h-16">
+    <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
       <input type="checkbox" checked={selected} onChange={handleSelect} class="mr-2" />
       <div class="flex flex-col w-full font-mono">
         <a href={url.shortUrl} class="text-blue-600 hover:underline">{url.shortUrl}</a>

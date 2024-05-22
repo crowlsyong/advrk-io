@@ -66,8 +66,6 @@ export default function Home({ data }: PageProps) {
   return (
     <div>
       <UrlShortenerView initialData={data.urls} latency={0} />
-
     </div>
-    
   );
 }
