@@ -1,6 +1,7 @@
 import { useCallback, useRef, useState } from "preact/hooks";
 import axios from "axios-web";
 import { generateQRCode } from "../utils/qrCode.ts";
+import QrCodeGenerator from "../islands/QrCodeGenerator.tsx";
 
 interface UrlEntry {
   id: string;
@@ -25,7 +26,7 @@ export default function UrlShortenerView(
   const [data, setData] = useState(props.initialData);
   const [adding, setAdding] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
-  const [qrCode, setQrCode] = useState<string | null>(null);
+  const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
   const urlInput = useRef<HTMLInputElement>(null);
 
   const toggleSelect = (id: string) => {
@@ -84,9 +85,6 @@ export default function UrlShortenerView(
     }
   }, []);
   
-  
-  
-
   const archiveUrl = useCallback(async (id: string) => {
     setAdding(true);
     try {
@@ -117,17 +115,13 @@ export default function UrlShortenerView(
     }
   }, [selected, data]);
 
-  const generateQrCode = useCallback(async (id: string) => {
-    try {
-      const url = data.find((entry) => entry.id === id)?.shortUrl;
-      if (url) {
-        const qrCodeBase64 = await generateQRCode(url);
-        setQrCode(qrCodeBase64);
-      }
-    } catch (error) {
-      console.error("Failed to generate QR code:", error);
+  const generateQrCode = useCallback((id: string) => {
+    const url = data.find((entry) => entry.id === id)?.shortUrl;
+    if (url) {
+      setQrCodeUrl((prevQrCodeUrl) => (prevQrCodeUrl === url ? null : url));
     }
   }, [data]);
+  
 
   const handleKeyDown = (event: KeyboardEvent) => {
     if (event.key === "Enter") {
@@ -157,10 +151,10 @@ export default function UrlShortenerView(
               Shorten
             </button>
           </div>
-          <div class="flex gap-2">
-          </div>
         </div>
+        
         <div> 
+      
           {data.map((url) => (
             <UrlItem
               key={url.id}
@@ -171,30 +165,31 @@ export default function UrlShortenerView(
               selected={selected.has(url.id)}
               toggleSelect={toggleSelect}
               generateQrCode={generateQrCode}
+              
             />
           ))}
+          
         </div>
-        <div class="flex flex-col py-4 gap-2 sm:items-end">
-        <button
-  class="p-2 border border-gray-500 text-black rounded"
-  onClick={() => window.location.href = '/data'}
->
-  📊 Database
-</button>
-        <button
-          class="p-2 bg-red-600 text-white rounded disabled:opacity-50"
-          onClick={archiveSelected}
-          disabled={selected.size === 0}
-        >
-          Archive Selected
-        </button>
-        {qrCode && (
+        {qrCodeUrl && (
           <div class="flex justify-center mt-4">
-            <img src={`data:image/png;base64,${qrCode}`} alt="QR Code" />
+            <QrCodeGenerator url={qrCodeUrl} />
           </div>
         )}
-
-        <div class="flex">
+        <div class="flex flex-col py-4 gap-2 sm:items-end">
+          <button
+            class="p-2 border border-gray-500 text-black rounded"
+            onClick={() => window.location.href = '/data'}
+          >
+            📊 Database
+          </button>
+          <button
+            class="p-2 bg-red-600 text-white rounded disabled:opacity-50"
+            onClick={archiveSelected}
+            disabled={selected.size === 0}
+          >
+            Archive Selected
+          </button>
+          <div class="flex">
           <a
             href="/archives"
             class="text-red-500 rounded text-center w-full"
@@ -203,10 +198,7 @@ export default function UrlShortenerView(
           </a>
           
         </div>
-        
-
         </div>
-        
         <div class="pt-6 opacity-50 text-sm">
           <p>Initial data fetched in {props.latency}ms</p>
           <p class="flex gap-2">
@@ -258,25 +250,23 @@ function UrlItem({
     setEditing(true);
     setTimeout(() => inputRef.current?.focus(), 0);
   };
-const handleSave = () => {
-  const sanitizedEnding = sanitizeInput(newShortUrlEnding);
-  const baseUrl = url.shortUrl.split("/").slice(0, -1).join("/");
-  const newShortUrl = `${baseUrl}/${sanitizedEnding}`;
 
-  // Check for duplicate short URLs
-  if (data.some((entry) => entry.shortUrl === newShortUrl && entry.id !== url.id)) {
-    setError("That one is already taken!");
-    return;
-  }
+  const handleSave = () => {
+    const sanitizedEnding = sanitizeInput(newShortUrlEnding);
+    const baseUrl = url.shortUrl.split("/").slice(0, -1).join("/");
+    const newShortUrl = `${baseUrl}/${sanitizedEnding}`;
 
-  console.log(`Updating URL: id=${url.id}, newShortUrl=${newShortUrl}`);
-  updateUrl(url.id, newShortUrl);
-  setEditing(false);
-  setError("");
-};
+    // Check for duplicate short URLs
+    if (data.some((entry) => entry.shortUrl === newShortUrl && entry.id !== url.id)) {
+      setError("That one is already taken!");
+      return;
+    }
 
-  
-  
+    console.log(`Updating URL: id=${url.id}, newShortUrl=${newShortUrl}`);
+    updateUrl(url.id, newShortUrl);
+    setEditing(false);
+    setError("");
+  };
 
   const handleCancel = () => {
     setNewShortUrlEnding(url.shortUrl.split("/").pop() || "");
@@ -331,6 +321,7 @@ const handleSave = () => {
           )}
         </div>
       </div>
+      
       <div class="flex p-4 gap-2 items-center sm:flex-end">
         {!editing && (
           <button class="p-2 mr-2" onClick={handleEdit} title="Edit">
@@ -354,6 +345,7 @@ const handleSave = () => {
         >
           QR
         </button>
+        
         <button
           class="p-2 ml-2 bg-red-200 text-white rounded"
           onClick={handleArchive}

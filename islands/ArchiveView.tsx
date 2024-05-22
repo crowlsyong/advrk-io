@@ -90,7 +90,7 @@ export default function ArchivesView(props: { initialData: UrlEntry[]; latency: 
         <div class="pt-6 opacity-50 text-sm">
           <p>Initial data fetched in {props.latency}ms</p>
           <p>
-            <a href="https://github.com/denoland/showcase_todo" class="underline">
+            <a href="https://github.com/crowlsyong/advrk-io" class="underline">
               Source code
             </a>
           </p>

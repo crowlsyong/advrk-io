@@ -1,10 +1,10 @@
-import { qrcode } from "https://raw.githubusercontent.com/denorg/qrcode/master/mod.ts";
+// utils/qrCode.ts
+import { qrcode } from "https://deno.land/x/qrcode/mod.ts";
 
 export async function generateQRCode(url: string): Promise<string> {
   try {
-    const qrCode = await qrcode(url);
-    const qrCodeDataURL = `data:image/png;base64,${qrCode}`;
-    return qrCodeDataURL;
+    const base64Image = qrcode(url);
+    return `data:image/png;base64,${base64Image}`;
   } catch (error) {
     console.error("Failed to generate QR code:", error);
     throw error;

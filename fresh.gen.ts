@@ -3,7 +3,6 @@
 // This file is automatically updated during development when running `dev.ts`.
 
 import * as $_id_ from "./routes/[id].tsx";
-import * as $_id_qr from "./routes/[id]/qr.ts";
 import * as $_listId_ from "./routes/[listId].tsx";
 import * as $_404 from "./routes/_404.tsx";
 import * as $_app from "./routes/_app.tsx";
@@ -12,15 +11,17 @@ import * as $archives from "./routes/archives.tsx";
 import * as $data from "./routes/data.tsx";
 import * as $greet_name_ from "./routes/greet/[name].tsx";
 import * as $index from "./routes/index.tsx";
+import * as $qr from "./routes/qr.tsx";
 import * as $ArchiveView from "./islands/ArchiveView.tsx";
 import * as $Counter from "./islands/Counter.tsx";
+import * as $QrCodeGenerator from "./islands/QrCodeGenerator.tsx";
 import * as $UrlShortenerView from "./islands/UrlShortenerView.tsx";
+import * as $qrcode from "./islands/qrcode.tsx";
 import { type Manifest } from "$fresh/server.ts";
 
 const manifest = {
   routes: {
     "./routes/[id].tsx": $_id_,
-    "./routes/[id]/qr.ts": $_id_qr,
     "./routes/[listId].tsx": $_listId_,
     "./routes/_404.tsx": $_404,
     "./routes/_app.tsx": $_app,
@@ -29,11 +30,14 @@ const manifest = {
     "./routes/data.tsx": $data,
     "./routes/greet/[name].tsx": $greet_name_,
     "./routes/index.tsx": $index,
+    "./routes/qr.tsx": $qr,
   },
   islands: {
     "./islands/ArchiveView.tsx": $ArchiveView,
     "./islands/Counter.tsx": $Counter,
+    "./islands/QrCodeGenerator.tsx": $QrCodeGenerator,
     "./islands/UrlShortenerView.tsx": $UrlShortenerView,
+    "./islands/qrcode.tsx": $qrcode,
   },
   baseUrl: import.meta.url,
 } satisfies Manifest;
