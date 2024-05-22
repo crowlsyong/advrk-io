@@ -1,6 +1,5 @@
 import { useCallback, useRef, useState } from "preact/hooks";
 import axios from "axios-web";
-import { generateQRCode } from "../utils/qrCode.ts";
 import QrCodeGenerator from "../islands/QrCodeGenerator.tsx";
 import IconQrcode from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/qrcode.tsx";
 import IconQrcodeOff from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/qrcode-off.tsx";
