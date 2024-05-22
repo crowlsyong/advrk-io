@@ -2,7 +2,14 @@ import { useCallback, useRef, useState } from "preact/hooks";
 import axios from "axios-web";
 import { generateQRCode } from "../utils/qrCode.ts";
 import QrCodeGenerator from "../islands/QrCodeGenerator.tsx";
-
+import IconQrcode from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/qrcode.tsx";
+import IconQrcodeOff from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/qrcode-off.tsx";
+import IconHttpDelete from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/http-delete.tsx";
+import IconCopy from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/copy.tsx";
+import IconDatabase from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/database.tsx";
+import IconArchive from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/archive.tsx";
+import IconDeviceFloppy from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/device-floppy.tsx";
+import IconArchiveFilled from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/archive-filled.tsx";
 interface UrlEntry {
   id: string;
   originalUrl: string;
@@ -63,20 +70,16 @@ export default function UrlShortenerView(
   const updateUrl = useCallback(async (id: string, newShortUrl: string) => {
     setAdding(true);
     try {
-      console.log(`Sending PUT request: id=${id}, shortUrl=${newShortUrl}`);
       const response = await axios.put(`${window.location.origin}/${id}`, {
-        id, // Ensure id is included
-        shortUrl: newShortUrl, // Properly include shortUrl
+        id,
+        shortUrl: newShortUrl,
       });
       if (response.status === 200) {
-        console.log(`Response from PUT request: ${JSON.stringify(response.data)}`);
         setData((prevData) =>
           prevData.map((url) =>
             url.id === id ? { ...url, shortUrl: newShortUrl } : url
           )
         );
-      } else {
-        console.error(`Failed to update URL: ${response.status}`);
       }
     } catch (error) {
       console.error("Failed to update URL:", error);
@@ -84,7 +87,7 @@ export default function UrlShortenerView(
       setAdding(false);
     }
   }, []);
-  
+
   const archiveUrl = useCallback(async (id: string) => {
     setAdding(true);
     try {
@@ -121,7 +124,6 @@ export default function UrlShortenerView(
       setQrCodeUrl((prevQrCodeUrl) => (prevQrCodeUrl === url ? null : url));
     }
   }, [data]);
-  
 
   const handleKeyDown = (event: KeyboardEvent) => {
     if (event.key === "Enter") {
@@ -134,7 +136,7 @@ export default function UrlShortenerView(
       <div class="rounded w-full xl:max-w-xl gap-4">
         <div class="flex flex-col pb-4">
           <div class="flex flex-row gap-2 items-center">
-            <h1 class="font-bold text-xl">URL Shortener</h1>
+            <h1 class="font-bold text-xl">🤏 URL Shortener</h1>
           </div>
           <div class="flex gap-2">
             <input
@@ -159,45 +161,59 @@ export default function UrlShortenerView(
             <UrlItem
               key={url.id}
               url={url}
-              data={data} // Pass data as a prop
+              data={data}
               updateUrl={updateUrl}
               archiveUrl={archiveUrl}
               selected={selected.has(url.id)}
               toggleSelect={toggleSelect}
               generateQrCode={generateQrCode}
-              
+              qrCodeUrl={qrCodeUrl}
             />
           ))}
           
         </div>
         {qrCodeUrl && (
-          <div class="flex justify-center mt-4">
+          <div class="flex justify-center mt-4 relative">
             <QrCodeGenerator url={qrCodeUrl} />
+            <button
+              class="absolute top-0 right-0 p-2 bg-red-500 text-white rounded"
+              onClick={() => setQrCodeUrl(null)}
+            >
+              Close
+            </button>
           </div>
         )}
         <div class="flex flex-col py-4 gap-2 sm:items-end">
-          <button
-            class="p-2 border border-gray-500 text-black rounded"
-            onClick={() => window.location.href = '/data'}
-          >
-            📊 Database
-          </button>
-          <button
-            class="p-2 bg-red-600 text-white rounded disabled:opacity-50"
-            onClick={archiveSelected}
-            disabled={selected.size === 0}
-          >
-            Archive Selected
-          </button>
-          <div class="flex">
+        <button
+  class="p-2 border border-gray-500 text-black rounded flex items-center"
+  onClick={() => window.location.href = '/data'}
+>
+  <IconDatabase class="mr-2" />
+  Database
+</button>
+
+<div class="flex">
           <a
-            href="/archives"
-            class="text-red-500 rounded text-center w-full"
-          >
-            View Archives
-          </a>
+  href="/archives"
+  class="p-2 text-red-500 rounded text-center w-full flex items-center"
+>
+  <IconArchiveFilled class="mr-2" />
+  View Archives
+</a>
+
           
         </div>
+<button
+  class="p-2 bg-red-600 text-white rounded disabled:opacity-50 flex items-center"
+  onClick={archiveSelected}
+  disabled={selected.size === 0}
+>
+  <IconArchive class="mr-2" />
+  Archive Selected
+</button>
+
+
+
         </div>
         <div class="pt-6 opacity-50 text-sm">
           <p>Initial data fetched in {props.latency}ms</p>
@@ -229,6 +245,7 @@ function UrlItem({
   selected,
   toggleSelect,
   generateQrCode,
+  qrCodeUrl,
 }: {
   url: UrlEntry;
   data: UrlEntry[];
@@ -237,6 +254,7 @@ function UrlItem({
   selected: boolean;
   toggleSelect: (id: string) => void;
   generateQrCode: (id: string) => void;
+  qrCodeUrl: string | null;
 }) {
   const [editing, setEditing] = useState(false);
   const [newShortUrlEnding, setNewShortUrlEnding] = useState(
@@ -256,13 +274,11 @@ function UrlItem({
     const baseUrl = url.shortUrl.split("/").slice(0, -1).join("/");
     const newShortUrl = `${baseUrl}/${sanitizedEnding}`;
 
-    // Check for duplicate short URLs
     if (data.some((entry) => entry.shortUrl === newShortUrl && entry.id !== url.id)) {
       setError("That one is already taken!");
       return;
     }
 
-    console.log(`Updating URL: id=${url.id}, newShortUrl=${newShortUrl}`);
     updateUrl(url.id, newShortUrl);
     setEditing(false);
     setError("");
@@ -290,7 +306,7 @@ function UrlItem({
   };
 
   return (
-    <div class="flex flex-col sm:flex-row p-4 gap-4 border-b border-gray-300 items-center">
+    <div class={`flex flex-col sm:flex-row p-4 gap-4 border-b border-gray-300 items-center ${qrCodeUrl === url.shortUrl ? 'bg-green-300' : ''}`}>
       <div class="flex w-full gap-2">
         <input
           type="checkbox"
@@ -325,43 +341,48 @@ function UrlItem({
       <div class="flex p-4 gap-2 items-center sm:flex-end">
         {!editing && (
           <button class="p-2 mr-2" onClick={handleEdit} title="Edit">
-            ✏️
+            ✏️ Edit
           </button>
         )}
         {editing && (
           <>
-            <button class="p-2 mr-2" onClick={handleSave} title="Save">
-              💾
-            </button>
+            <button class="p-2 mr-2 flex items-center" onClick={handleSave} title="Save">
+  <IconDeviceFloppy class="mr-2" />
+  Save
+</button>
+
             <button class="p-2" onClick={handleCancel} title="Cancel">
-              🚫
+              ❌
             </button>
           </>
         )}
-        <button
-          class="p-2 ml-2 border-2 border-black rounded"
-          onClick={handleGenerateQrCode}
-          title="Generate QR Code"
-        >
-          QR
-        </button>
+       <button
+  class="p-2 ml-2 border-2 border-black rounded flex items-center"
+  onClick={handleGenerateQrCode}
+  title="Generate QR Code"
+>
+  <IconQrcode />
+</button>
+
         
+<button
+  class="p-2 ml-2 bg-red-200 rounded flex items-center"
+  onClick={handleArchive}
+  title="Archive"
+>
+  <IconHttpDelete />
+</button>
+
         <button
-          class="p-2 ml-2 bg-red-200 text-white rounded"
-          onClick={handleArchive}
-          title="Archive"
-        >
-          🗑️
-        </button>
-        <button
-          class="p-2 ml-2 bg-green-200 text-white rounded"
-          onClick={handleCopy}
-          title="Copy"
-        >
-          📋
-        </button>
+  class="p-2 ml-2 bg-green-200 rounded flex items-center"
+  onClick={handleCopy}
+  title="Copy"
+>
+  <IconCopy />
+</button>
+
         {copied && (
-          <div class="text-xs text-green-500 ml-2">
+          <div class="text-xs ml-2">
             Copied to clipboard!
           </div>
         )}

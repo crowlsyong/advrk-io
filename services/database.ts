@@ -9,7 +9,7 @@ export const urlSchema = z.object({
 });
 export type UrlSchema = z.infer<typeof urlSchema>;
 
-const BASE_URL = Deno.env.get("BASE_URL") || "http://localhost:8000";
+const BASE_URL = Deno.env.get("BASE_URL") || "https://advrk.io";
 // http://localhost:8000
 // https://advrk.io
 
