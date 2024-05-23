@@ -2,7 +2,6 @@ import { useCallback, useEffect, useRef, useState } from "preact/hooks";
 import axios from "axios-web";
 import QrCodeGenerator from "../islands/QrCodeGenerator.tsx";
 import IconTrashX from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/trash-x.tsx";
-import Search from "./Search.tsx";
 import UrlList from "../islands/UrlList.tsx";
 
 export interface UrlEntry {
@@ -23,7 +22,7 @@ export default function UrlShortenerView(
   props: { initialData: UrlEntry[]; latency: number },
 ) {
   const [data, setData] = useState(props.initialData);
-  const [filteredData, setFilteredData] = useState(props.initialData); // State for filtered data
+  const [filteredData, setFilteredData] = useState(props.initialData);
   const [adding, setAdding] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [lastSelectedIndex, setLastSelectedIndex] = useState<number | null>(null);
@@ -43,38 +42,37 @@ export default function UrlShortenerView(
     );
   }, [props.initialData]);
 
-const toggleSelect = (id: string, index: number, event: Event) => {
-  const { shiftKey } = event as KeyboardEvent;
-  setSelected((prevSelected) => {
-    const newSelected = new Set(prevSelected);
-    if (shiftKey && lastSelectedIndex !== null) {
-      const start = Math.min(lastSelectedIndex, index);
-      const end = Math.max(lastSelectedIndex, index);
-      for (let i = start; i <= end; i++) {
-        newSelected.add(data[i].id);
-      }
-    } else {
-      if (newSelected.has(id)) {
-        newSelected.delete(id);
+  const toggleSelect = (id: string, index: number, event: Event) => {
+    const { shiftKey } = event as KeyboardEvent;
+    setSelected((prevSelected) => {
+      const newSelected = new Set(prevSelected);
+      if (shiftKey && lastSelectedIndex !== null) {
+        const start = Math.min(lastSelectedIndex, index);
+        const end = Math.max(lastSelectedIndex, index);
+        for (let i = start; i <= end; i++) {
+          newSelected.add(data[i].id);
+        }
       } else {
-        newSelected.add(id);
+        if (newSelected.has(id)) {
+          newSelected.delete(id);
+        } else {
+          newSelected.add(id);
+        }
+        setLastSelectedIndex(index);
       }
-      setLastSelectedIndex(index);
-    }
-    return newSelected;
-  });
-};
-
+      return newSelected;
+    });
+  };
 
   const anySelected = selected.size > 0;
 
   const addUrl = useCallback(async () => {
-    let value = urlInput.current!.value;
+    let value = urlInput.current!.value.toLowerCase();
     if (!value) return;
     value = ensureProtocol(value);
     urlInput.current!.value = "";
     setAdding(true);
-
+  
     try {
       const response = await axios.post(window.location.href, { url: value });
       if (response.status === 201) {
@@ -82,7 +80,7 @@ const toggleSelect = (id: string, index: number, event: Event) => {
           new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
         );
         setData(updatedData);
-        setFilteredData(updatedData); // Update filtered data as well
+        setFilteredData(updatedData);
       }
     } catch (error) {
       console.error("Failed to add URL:", error);
@@ -90,6 +88,7 @@ const toggleSelect = (id: string, index: number, event: Event) => {
       setAdding(false);
     }
   }, []);
+  
 
   const updateUrl = useCallback(async (id: string, newShortUrl: string) => {
     setAdding(true);
@@ -107,7 +106,7 @@ const toggleSelect = (id: string, index: number, event: Event) => {
           new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
         );
         setData(updatedData);
-        setFilteredData(updatedData); // Update filtered data as well
+        setFilteredData(updatedData);
       }
     } catch (error) {
       console.error("Failed to update URL:", error);
@@ -125,7 +124,7 @@ const toggleSelect = (id: string, index: number, event: Event) => {
         b,
       ) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
       setData(updatedData);
-      setFilteredData(updatedData); // Update filtered data as well
+      setFilteredData(updatedData);
     } catch (error) {
       console.error("Failed to archive URL:", error);
     } finally {
@@ -173,12 +172,14 @@ const toggleSelect = (id: string, index: number, event: Event) => {
     }
   };
 
-  const handleSearch = (query: string) => {
+  const handleInput = (event: Event) => {
+    const query = (event.target as HTMLInputElement).value.toLowerCase();
     const filtered = data.filter((url) =>
-      url.originalUrl.includes(query) || url.shortUrl.includes(query)
+      url.originalUrl.toLowerCase().includes(query) || url.shortUrl.toLowerCase().includes(query)
     );
     setFilteredData(filtered);
   };
+  
 
   return (
     <div class="flex gap-2 w-full items-center justify-center py-8 px-4 sm:px-6 lg:px-8 dark:bg-gray-900">
@@ -200,6 +201,7 @@ const toggleSelect = (id: string, index: number, event: Event) => {
               placeholder="Enter your URL here"
               ref={urlInput}
               onKeyDown={handleKeyDown}
+              onInput={handleInput}
             />
             <button
               class="p-2 bg-blue-600 text-white rounded disabled:opacity-50"
@@ -208,13 +210,6 @@ const toggleSelect = (id: string, index: number, event: Event) => {
             >
               Shorten
             </button>
-          </div>
-          <div class="py-4">
-            <Search
-              searchUrl={async () => {}} // Update this if you have a specific search function
-              searching={false}
-              onSearch={handleSearch}
-            />
           </div>
         </div>
 

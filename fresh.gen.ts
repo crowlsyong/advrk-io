@@ -20,6 +20,7 @@ import * as $s_middleware from "./routes/s/_middleware.ts";
 import * as $s_archive from "./routes/s/archive.tsx";
 import * as $s_data from "./routes/s/data.tsx";
 import * as $s_index from "./routes/s/index.tsx";
+import * as $u_middleware from "./routes/u/_middleware.ts";
 import * as $u_create from "./routes/u/create.tsx";
 import * as $u_db from "./routes/u/db.tsx";
 import * as $u_index from "./routes/u/index.tsx";
@@ -58,6 +59,7 @@ const manifest = {
     "./routes/s/archive.tsx": $s_archive,
     "./routes/s/data.tsx": $s_data,
     "./routes/s/index.tsx": $s_index,
+    "./routes/u/_middleware.ts": $u_middleware,
     "./routes/u/create.tsx": $u_create,
     "./routes/u/db.tsx": $u_db,
     "./routes/u/index.tsx": $u_index,

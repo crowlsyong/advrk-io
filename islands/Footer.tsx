@@ -10,7 +10,7 @@ export default function Footer() {
       <div class="container mx-auto px-4">
         <div class="flex flex-wrap justify-between items-center">
           <div class="w-full md:w-auto text-center md:text-left">
-            <h2 class="text-2xl font-bold mb-2">Advrk.io</h2>
+            <h2 class="text-xl font-bold mb-2">Advrk.io</h2>
             <p class="text-gray-400">© 2024 MinibittyURLzRus. All rights reserved.</p>
           </div>
           <div class="w-full md:w-auto text-center md:text-right mt-4 md:mt-0">

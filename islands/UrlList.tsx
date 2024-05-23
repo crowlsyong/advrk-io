@@ -57,18 +57,25 @@ function UrlItem({
 
   const handleSave = () => {
     const sanitizedEnding = sanitizeInput(newShortUrlEnding);
+  
+    if (sanitizedEnding.length < 4) {
+      setError("Too short. Minimum 4 characters.");
+      return;
+    }
+  
     const baseUrl = url.shortUrl.split("/").slice(0, -1).join("/");
     const newShortUrl = `${baseUrl}/${sanitizedEnding}`;
-
+  
     if (data.some((entry) => entry.shortUrl === newShortUrl && entry.id !== url.id)) {
       setError("That one is already taken!");
       return;
     }
-
+  
     updateUrl(url.id, newShortUrl);
     setEditing(false);
     setError("");
   };
+  
 
   const handleCancel = () => {
     setNewShortUrlEnding(url.shortUrl.split("/").pop() || "");

@@ -72,7 +72,7 @@ export default function TopBar() {
       >
         <IconMenu2 class="h-6 w-6" aria-hidden="true" />
       </button>
-      <a href="/" class="ml-1 text-xl font-semibold text-white">🧗 advrk.io</a>
+      <a href="/" class="ml-1 text-2xl font-semibold text-white">🧗 advrk.io</a>
     </div>
   </div>
 </div>
