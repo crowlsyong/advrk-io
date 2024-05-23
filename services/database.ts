@@ -7,10 +7,12 @@ export const urlSchema = z.object({
   originalUrl: z.string().url(),
   shortUrl: z.string(),
   archived: z.boolean(),
+  timestamp: z.string(), // Add timestamp field
 });
 export type UrlSchema = z.infer<typeof urlSchema>;
 
 export const userSchema = z.object({
+  id: z.string(),
   username: z.string(),
   password: z.string(), // In a real application, you'd store a hashed password
 });
@@ -30,7 +32,8 @@ function generateShortId(length = 4) {
 export async function createUrlEntry(originalUrl: string): Promise<string> {
   const id = generateShortId();
   const shortUrl = `${BASE_URL}/${id}`;
-  const urlEntry: UrlSchema = { originalUrl, shortUrl, archived: false };
+  const timestamp = new Date().toISOString(); // Add timestamp
+  const urlEntry: UrlSchema = { originalUrl, shortUrl, archived: false, timestamp };
   await kv.set(["url", id], urlEntry);
   return shortUrl;
 }
@@ -56,7 +59,6 @@ export async function isDuplicateShortUrl(shortUrl: string): Promise<boolean> {
   }
   return false;
 }
-
 export async function getAllUrls(): Promise<Array<{ id: string } & UrlSchema>> {
   const urls = [];
   const it = kv.list({ prefix: ["url"] });
@@ -80,6 +82,7 @@ export async function getAllArchivedUrls(): Promise<Array<{ id: string } & UrlSc
   }
   return urls;
 }
+
 
 export async function getUrlEntry(id: string): Promise<UrlSchema | undefined> {
   const entry = await kv.get(["url", id]);
@@ -132,11 +135,18 @@ export async function deleteUrl(id: string): Promise<boolean> {
 
 // User-related functions
 export async function createUser(username: string, password: string): Promise<void> {
-  const userEntry: UserSchema = { username, password };
-  await kv.set(["user", username], userEntry);
+  const id = generateShortId(8); // Generate unique ID for the user
+  const userEntry: UserSchema = { id, username, password };
+  await kv.set(["user", id], userEntry);
 }
 
 export async function getUser(username: string): Promise<UserSchema | undefined> {
-  const entry = await kv.get(["user", username]);
-  return entry.value as UserSchema | undefined;
+  const it = kv.list({ prefix: ["user"] });
+  for await (const entry of it) {
+    const user = entry.value as UserSchema;
+    if (user.username === username) {
+      return user;
+    }
+  }
+  return undefined;
 }

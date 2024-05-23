@@ -1,20 +1,20 @@
+// index.tsx
 import { Handlers, PageProps } from "$fresh/server.ts";
-import UrlShortenerView from "../islands/UrlShortenerView.tsx";
-import { ShortenerService } from "../services/shortener.ts";
+import UrlShortenerView from "../../islands/UrlShortenerView.tsx";
+import { ShortenerService } from "../../services/shortener.ts";
 import { getCookies } from "https://deno.land/std@0.203.0/http/cookie.ts";
-import Hero from "../components/Hero.tsx"; 
-import Features from "../components/Features.tsx";
+import Hero from "../../components/hero.tsx"; // Ensure this path is correct
+
+interface Data {
+  isAllowed: boolean;
+  urls?: Url[];
+}
 
 interface Url {
   id: string;
   shortUrl: string;
   originalUrl: string;
-  timestamp: string;
-}
-
-interface Data {
-  isAllowed: boolean;
-  urls: Url[];
+  timestamp: string; // Add timestamp here
 }
 
 export const handler: Handlers<Data> = {
@@ -68,8 +68,9 @@ export const handler: Handlers<Data> = {
 export default function Home({ data }: PageProps<Data>) {
   return (
     <div>
-      <Hero isLoggedIn={data.isAllowed} />
-      {!data.isAllowed && <Features />}
+      {data.isAllowed
+        ? <UrlShortenerView initialData={data.urls ?? []} latency={0} />
+        : <Hero />}
     </div>
   );
 }

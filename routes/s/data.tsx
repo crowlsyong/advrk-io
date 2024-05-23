@@ -3,7 +3,7 @@ import {
   getAllArchivedUrls,
   getAllUrls,
   UrlSchema,
-} from "../services/database.ts";
+} from "../../services/database.ts";
 
 export const handler: Handlers = {
   async GET(_, ctx) {
@@ -22,7 +22,7 @@ export default function DataPage(
   >,
 ) {
   return (
-    <div class="flex gap-2 w-full items-center  justify-center py-8 px-4 sm:px-6 lg:px-8">
+    <div class="bg-gray-900 flex gap-2 w-full items-center  justify-center py-8 px-4 sm:px-6 lg:px-8">
       <div class="w-full max-w-4xl mx-auto sm:px-6 lg:px-8 bg-gray-100 border border-black rounded p-4">
         <h1 class="text-xl font-bold mb-4">📊 Database</h1>
         <div>

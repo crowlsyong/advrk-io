@@ -1,6 +1,6 @@
 import { Handlers, PageProps } from "$fresh/server.ts";
-import ArchivesView from "../islands/ArchiveView.tsx";
-import { ShortenerService } from "../services/shortener.ts";
+import ArchivesView from "../../islands/ArchiveView.tsx";
+import { ShortenerService } from "../../services/shortener.ts";
 
 export const handler: Handlers = {
   async GET(req, ctx) {

@@ -5,6 +5,7 @@ import IconDeselect from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/deselec
 import IconRestore from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/restore.tsx";
 import IconTrash from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/trash.tsx";
 import IconTextScan2 from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/text-scan-2.tsx";
+import Search from "./Search.tsx";
 
 interface UrlEntry {
   id: string;
@@ -14,6 +15,7 @@ interface UrlEntry {
 
 export default function ArchivesView(props: { initialData: UrlEntry[]; latency: number }) {
   const [data, setData] = useState(props.initialData);
+  const [filteredData, setFilteredData] = useState(props.initialData);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [duplicateUrls, setDuplicateUrls] = useState<Set<string>>(new Set());
   const lastSelectedIndex = useRef<number | null>(null);
@@ -66,6 +68,7 @@ export default function ArchivesView(props: { initialData: UrlEntry[]; latency: 
         await axios.delete(window.location.href, { data: { id } });
       }
       setData((prevData) => prevData.filter((url) => !selected.has(url.id)));
+      setFilteredData((prevData) => prevData.filter((url) => !selected.has(url.id)));
       setSelected(new Set());
     } catch (error) {
       console.error("Failed to delete the URLs:", error);
@@ -81,6 +84,7 @@ export default function ArchivesView(props: { initialData: UrlEntry[]; latency: 
         await axios.put(window.location.href, { id });
       }
       setData((prevData) => prevData.filter((url) => !selected.has(url.id)));
+      setFilteredData((prevData) => prevData.filter((url) => !selected.has(url.id)));
       setSelected(new Set());
     } catch (error) {
       console.error("Failed to restore the URLs:", error);
@@ -100,21 +104,34 @@ export default function ArchivesView(props: { initialData: UrlEntry[]; latency: 
     const url = data.find(url => url.id === id);
     return url && duplicateUrls.has(url.shortUrl);
   });
-  
+
+  const handleSearch = (query: string) => {
+    const filtered = data.filter(url =>
+      url.originalUrl.includes(query) || url.shortUrl.includes(query)
+    );
+    setFilteredData(filtered);
+  };
+
   return (
-    <div class="flex gap-2 w-full items-center justify-center py-8 px-4 sm:px-6 lg:px-8">
-      <div class="w-full max-w-4xl mx-auto sm:px-6 lg:px-8 bg-gray-100 border border-black rounded p-4">
+    <div class="bg-gray-900 flex gap-2 w-full items-center justify-center py-8 px-4 sm:px-6 lg:px-8">
+      <div class="w-full max-w-4xl mx-auto sm:px-6 lg:px-8 bg-gray-800 border border-gray-700 rounded p-4">
         <div class="flex flex-col pb-4">
           <div class="flex flex-row gap-2 items-center">
-            <h1 class="font-bold text-xl m-4">📁 Archive</h1>
+            <h1 class="font-bold text-xl m-4 text-white">📁 Archive</h1>
             <a
               href="/s"
-              class="px-1 py-1 text-gray-600  hover:bg-gray-200 hover:text-black rounded flex gap-1 text-xs ml-auto"
+              class="px-1 py-1 text-gray-400 hover:bg-gray-700 hover:text-white rounded flex gap-1 text-xs ml-auto"
             >
               <IconTextScan2 class="w-4 h-4" />
               Go to URL Shortener
             </a>
           </div>
+          
+          <Search
+            searchUrl={async () => {}}  // Update this if you have a specific search function
+            searching={false}
+            onSearch={handleSearch}
+          />
 
           <div class="flex justify-between mt-2">
             <div class="flex gap-1">
@@ -122,7 +139,7 @@ export default function ArchivesView(props: { initialData: UrlEntry[]; latency: 
                 ? (
                   <button
                     type="button"
-                    class="px-1 py-1 rounded border(gray-400 1) hover:bg-gray-200 flex gap-1 text-xs"
+                    class="text-gray-300 px-1 py-1 rounded border-gray-700 hover:bg-gray-700 hover:text-white flex gap-1 text-xs"
                     onClick={selectAll}
                   >
                     <IconSelectAll class="w-4 h-4" />
@@ -132,7 +149,7 @@ export default function ArchivesView(props: { initialData: UrlEntry[]; latency: 
                 : (
                   <button
                     type="button"
-                    class="px-1 py-1 rounded flex gap-1 text-xs"
+                    class="px-1 py-1 rounded flex gap-1 text-xs hover:bg-gray-700 hover:text-white"
                     onClick={deselectAll}
                   >
                     <IconDeselect class="w-4 h-4" />
@@ -142,31 +159,31 @@ export default function ArchivesView(props: { initialData: UrlEntry[]; latency: 
             </div>
 
             {selected.size > 0 && (
-  <div class="flex gap-1">
-    <button
-      type="button"
-      class="px-1 py-1 rounded flex gap-1 text-xs bg-red-500 text-white"
-      onClick={deleteSelected}
-    >
-      <IconTrash class="w-4 h-4" />
-      Delete Selected
-    </button>
-    <button
-      type="button"
-      class={`px-1 py-1 rounded flex gap-1 text-xs ${hasDuplicateSelected ? 'bg-gray-300 text-black' : 'bg-blue-600 text-white'}`}
-      onClick={hasDuplicateSelected ? deselectAll : restoreSelected}
-      disabled={hasDuplicateSelected}
-    >
-      <IconRestore class="w-4 h-4" />
-      {hasDuplicateSelected ? 'Deselect Duplicate' : 'Restore Selected'}
-    </button>
-  </div>
-)}
+              <div class="flex gap-1">
+                <button
+                  type="button"
+                  class="px-1 py-1 rounded flex gap-1 text-xs bg-red-500 text-white"
+                  onClick={deleteSelected}
+                >
+                  <IconTrash class="w-4 h-4" />
+                  Delete Selected
+                </button>
+                <button
+                  type="button"
+                  class={`px-1 py-1 rounded flex gap-1 text-xs ${hasDuplicateSelected ? 'bg-gray-500 text-gray-300' : 'bg-blue-600 text-white'}`}
+                  onClick={hasDuplicateSelected ? deselectAll : restoreSelected}
+                  disabled={hasDuplicateSelected}
+                >
+                  <IconRestore class="w-4 h-4" />
+                  {hasDuplicateSelected ? 'Deselect Duplicate' : 'Restore Selected'}
+                </button>
+              </div>
+            )}
 
           </div>
         </div>
         <div>
-          {data.map((url, index) => (
+          {filteredData.map((url, index) => (
             <UrlItem
               key={url.id}
               url={url}
@@ -177,7 +194,7 @@ export default function ArchivesView(props: { initialData: UrlEntry[]; latency: 
           ))}
         </div>
 
-        <div class="pt-6 opacity-50 text-sm">
+        <div class="pt-6 opacity-50 text-sm text-gray-400">
           <p>Initial data fetched in {props.latency}ms</p>
           <p>
             <a href="https://github.com/crowlsyong/advrk-io" class="underline">
@@ -203,7 +220,7 @@ function UrlItem(
   };
 
   return (
-    <div class={`flex my-2 border-b border-gray-300 items-center h-16 gap-2 ${isDuplicate ? 'text-red-500' : ''}`}>
+    <div class={`flex my-2 border-b border-gray-700 items-center h-16 gap-2 ${isDuplicate ? 'text-red-500' : 'text-white'}`}>
       <input
         type="checkbox"
         checked={selected}
@@ -212,14 +229,14 @@ function UrlItem(
       />
       <div class="flex flex-col w-full font-mono">
         <div class="flex items-center">
-          <a href={url.shortUrl} class="text-blue-600 hover:underline">
+          <a href={url.shortUrl} class="text-blue-400 hover:underline">
             {url.shortUrl}
           </a>
           {isDuplicate && (
             <span class="ml-2 text-red-500">duplicate in production</span>
           )}
         </div>
-        <p class="text-xs opacity-50 leading-loose text-black">{url.originalUrl}</p>
+        <p class="text-xs opacity-50 leading-loose text-gray-400">{url.originalUrl}</p>
       </div>
     </div>
   );

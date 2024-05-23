@@ -63,9 +63,9 @@ export default function Home({ data }: PageProps<Data>) {
   return (
     <div class="bg-gradient-to-r from-blue-500 to-indigo-600 min-h-screen pb-10 flex flex-col items-center justify-center">
       <div class="flex flex-row gap-2 items-center">
-        <h1 class="font-bold text-2xl mb-4">🧗 advrk.io</h1>
+        <h1 class="font-bold text-white text-2xl mb-4">🧗 advrk.io</h1>
       </div>
-      <div class=" mb-4 text white">
+      <div class=" mb-4 text-white">
         Youz currently {data.isAllowed ? "are" : "not be"} logged in.
       </div>
       {!data.isAllowed ? <Login /> : <a href="/logout">Logout</a>}

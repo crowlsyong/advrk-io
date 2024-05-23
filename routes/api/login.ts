@@ -24,7 +24,7 @@ export const handler: Handlers = {
         secure: true,
       });
 
-      headers.set("location", "/");
+      headers.set("location", "/s/");
       return new Response(null, {
         status: 303, // "See Other"
         headers,
