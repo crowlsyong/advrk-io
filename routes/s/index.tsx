@@ -3,7 +3,7 @@ import { Handlers, PageProps } from "$fresh/server.ts";
 import UrlShortenerView from "../../islands/UrlShortenerView.tsx";
 import { ShortenerService } from "../../services/shortener.ts";
 import { getCookies } from "https://deno.land/std@0.203.0/http/cookie.ts";
-import Hero from "../../components/hero.tsx"; // Ensure this path is correct
+import Hero from "../../components/Hero.tsx"; // Ensure this path is correct
 
 interface Data {
   isAllowed: boolean;
