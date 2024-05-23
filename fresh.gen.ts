@@ -14,13 +14,17 @@ import * as $archive2 from "./routes/archive2.tsx";
 import * as $data from "./routes/data.tsx";
 import * as $greet_name_ from "./routes/greet/[name].tsx";
 import * as $index from "./routes/index.tsx";
+import * as $login from "./routes/login.tsx";
 import * as $logindex from "./routes/logindex.tsx";
 import * as $logout from "./routes/logout.ts";
 import * as $qr from "./routes/qr.tsx";
-import * as $s from "./routes/s.tsx";
+import * as $u_create from "./routes/u/create.tsx";
+import * as $u_db from "./routes/u/db.tsx";
+import * as $u_index from "./routes/u/index.tsx";
 import * as $ArchiveView from "./islands/ArchiveView.tsx";
 import * as $ArchiveView2 from "./islands/ArchiveView2.tsx";
 import * as $Counter from "./islands/Counter.tsx";
+import * as $CreateUserForm from "./islands/CreateUserForm.tsx";
 import * as $QrCodeGenerator from "./islands/QrCodeGenerator.tsx";
 import * as $TopBar from "./islands/TopBar.tsx";
 import * as $UrlInput from "./islands/UrlInput.tsx";
@@ -42,15 +46,19 @@ const manifest = {
     "./routes/data.tsx": $data,
     "./routes/greet/[name].tsx": $greet_name_,
     "./routes/index.tsx": $index,
+    "./routes/login.tsx": $login,
     "./routes/logindex.tsx": $logindex,
     "./routes/logout.ts": $logout,
     "./routes/qr.tsx": $qr,
-    "./routes/s.tsx": $s,
+    "./routes/u/create.tsx": $u_create,
+    "./routes/u/db.tsx": $u_db,
+    "./routes/u/index.tsx": $u_index,
   },
   islands: {
     "./islands/ArchiveView.tsx": $ArchiveView,
     "./islands/ArchiveView2.tsx": $ArchiveView2,
     "./islands/Counter.tsx": $Counter,
+    "./islands/CreateUserForm.tsx": $CreateUserForm,
     "./islands/QrCodeGenerator.tsx": $QrCodeGenerator,
     "./islands/TopBar.tsx": $TopBar,
     "./islands/UrlInput.tsx": $UrlInput,

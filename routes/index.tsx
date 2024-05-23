@@ -1,74 +1,77 @@
-import type { Handlers, PageProps } from "$fresh/server.ts";
+// index.tsx
+import { Handlers, PageProps } from "$fresh/server.ts";
+import UrlShortenerView from "../islands/UrlShortenerView.tsx";
+import { ShortenerService } from "../services/shortener.ts";
 import { getCookies } from "https://deno.land/std@0.203.0/http/cookie.ts";
+import Hero from "../components/hero.tsx"; // Ensure this path is correct
 
 interface Data {
   isAllowed: boolean;
+  urls?: Url[];
 }
 
-export const handler: Handlers = {
-  GET(req, ctx) {
+interface Url {
+  id: string;
+  shortUrl: string;
+  originalUrl: string;
+}
+
+export const handler: Handlers<Data> = {
+  async GET(req, ctx) {
     const cookies = getCookies(req.headers);
-    return ctx.render!({ isAllowed: cookies.auth === "bar" });
+    const isAllowed = cookies.auth === "bar";
+
+    let urls: Url[] = [];
+    if (isAllowed) {
+      urls = await ShortenerService.getAll();
+    }
+
+    return ctx.render({ isAllowed, urls });
+  },
+
+  async POST(req, ctx) {
+    const { url } = await req.json();
+    await ShortenerService.create(url);
+    const urls: Url[] = await ShortenerService.getAll();
+    return new Response(JSON.stringify({ urls }), {
+      status: 201,
+      headers: { "Content-Type": "application/json" },
+    });
+  },
+
+  async PUT(req, ctx) {
+    const { id, shortUrl } = await req.json();
+    const success = await ShortenerService.update(id, shortUrl);
+    if (success) {
+      const urls: Url[] = await ShortenerService.getAll();
+      return new Response(JSON.stringify({ urls }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
+    } else {
+      return new Response("Not Found", { status: 404 });
+    }
+  },
+
+  async DELETE(req, ctx) {
+    const { id } = await req.json();
+    await ShortenerService.archive(id);
+    const urls: Url[] = await ShortenerService.getAll();
+    return new Response(JSON.stringify({ urls }), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
   },
 };
 
-function Login() {
-  return (
-    <form
-      method="post"
-      action="/api/login"
-      class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
-    >
-      <div class="mb-4">
-        <label
-          class="block text-gray-700 text-sm font-bold mb-2"
-          htmlFor="username"
-        >
-          Username
-        </label>
-        <input
-          type="text"
-          name="username"
-          id="username"
-          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-        />
-      </div>
-      <div class="mb-6">
-        <label
-          class="block text-gray-700 text-sm font-bold mb-2"
-          htmlFor="password"
-        >
-          Password
-        </label>
-        <input
-          type="password"
-          name="password"
-          id="password"
-          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
-        />
-      </div>
-      <div class="flex items-center justify-between">
-        <button
-          type="submit"
-          class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-        >
-          Submit
-        </button>
-      </div>
-    </form>
-  );
-}
-
 export default function Home({ data }: PageProps<Data>) {
   return (
-    <div class="pt-16 flex flex-col items-center justify-center">
-      <div class="flex flex-row gap-2 items-center">
-        <h1 class="font-bold text-2xl mb-4">🧗 advrk.io</h1>
-      </div>
-      <div class="text-2xl mb-4">
-        You currently {data.isAllowed ? "are" : "are not"} logged in.
-      </div>
-      {!data.isAllowed ? <Login /> : <a href="/logout">Logout</a>}
+    <div>
+      {data.isAllowed ? (
+        <UrlShortenerView initialData={data.urls ?? []} latency={0} />
+      ) : (
+        <Hero />
+      )}
     </div>
   );
 }

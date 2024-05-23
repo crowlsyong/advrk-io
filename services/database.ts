@@ -1,3 +1,4 @@
+// database.ts
 import { z } from "zod";
 
 export const kv = await Deno.openKv();
@@ -9,11 +10,13 @@ export const urlSchema = z.object({
 });
 export type UrlSchema = z.infer<typeof urlSchema>;
 
+export const userSchema = z.object({
+  username: z.string(),
+  password: z.string(), // In a real application, you'd store a hashed password
+});
+export type UserSchema = z.infer<typeof userSchema>;
+
 const BASE_URL = Deno.env.get("BASE_URL") || "https://advrk.io";
-// http://localhost:8000
-// https://advrk.io
-// http://localhost:8000/s
-// https://advrk.io/s
 
 function generateShortId(length = 4) {
   const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -53,7 +56,6 @@ export async function isDuplicateShortUrl(shortUrl: string): Promise<boolean> {
   }
   return false;
 }
-
 
 export async function getAllUrls(): Promise<Array<{ id: string } & UrlSchema>> {
   const urls = [];
@@ -126,4 +128,15 @@ export async function deleteUrl(id: string): Promise<boolean> {
   }
   await kv.delete(["url", id]);
   return true;
+}
+
+// User-related functions
+export async function createUser(username: string, password: string): Promise<void> {
+  const userEntry: UserSchema = { username, password };
+  await kv.set(["user", username], userEntry);
+}
+
+export async function getUser(username: string): Promise<UserSchema | undefined> {
+  const entry = await kv.get(["user", username]);
+  return entry.value as UserSchema | undefined;
 }
