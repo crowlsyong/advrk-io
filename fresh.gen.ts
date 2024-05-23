@@ -16,6 +16,7 @@ import * as $login from "./routes/login.tsx";
 import * as $logindex from "./routes/logindex.tsx";
 import * as $logout from "./routes/logout.ts";
 import * as $qr from "./routes/qr.tsx";
+import * as $s_middleware from "./routes/s/_middleware.ts";
 import * as $s_archive from "./routes/s/archive.tsx";
 import * as $s_data from "./routes/s/data.tsx";
 import * as $s_index from "./routes/s/index.tsx";
@@ -32,6 +33,7 @@ import * as $Notification from "./islands/Notification.tsx";
 import * as $QrCodeGenerator from "./islands/QrCodeGenerator.tsx";
 import * as $Search from "./islands/Search.tsx";
 import * as $TopBar from "./islands/TopBar.tsx";
+import * as $UrlList from "./islands/UrlList.tsx";
 import * as $UrlShortenerView from "./islands/UrlShortenerView.tsx";
 import * as $qrcode from "./islands/qrcode.tsx";
 import { type Manifest } from "$fresh/server.ts";
@@ -52,6 +54,7 @@ const manifest = {
     "./routes/logindex.tsx": $logindex,
     "./routes/logout.ts": $logout,
     "./routes/qr.tsx": $qr,
+    "./routes/s/_middleware.ts": $s_middleware,
     "./routes/s/archive.tsx": $s_archive,
     "./routes/s/data.tsx": $s_data,
     "./routes/s/index.tsx": $s_index,
@@ -70,6 +73,7 @@ const manifest = {
     "./islands/QrCodeGenerator.tsx": $QrCodeGenerator,
     "./islands/Search.tsx": $Search,
     "./islands/TopBar.tsx": $TopBar,
+    "./islands/UrlList.tsx": $UrlList,
     "./islands/UrlShortenerView.tsx": $UrlShortenerView,
     "./islands/qrcode.tsx": $qrcode,
   },

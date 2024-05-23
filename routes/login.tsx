@@ -1,18 +1,19 @@
-import { h } from "preact"; // Import h from preact
+import { h } from "preact";
+import { useEffect } from "preact/hooks";
 import type { Handlers, PageProps } from "$fresh/server.ts";
 import { getCookies } from "https://deno.land/std@0.203.0/http/cookie.ts";
-import ErrorHandler from "../islands/ErrorHandler.tsx"; // Import the ErrorHandler component
+import ErrorHandler from "../islands/ErrorHandler.tsx";
 
 interface Data {
   isAllowed: boolean;
-  error?: string; // Add an error property to the Data interface
+  error?: string;
 }
 
 export const handler: Handlers = {
   GET(req, ctx) {
     const url = new URL(req.url);
     const cookies = getCookies(req.headers);
-    const error = url.searchParams.get("error"); // Get error message from URL parameters
+    const error = url.searchParams.get("error");
     return ctx.render!({ isAllowed: cookies.auth === "bar", error });
   },
 };
@@ -65,6 +66,14 @@ function Login() {
 }
 
 export default function Home({ data }: PageProps<Data>) {
+  useEffect(() => {
+    // Log the auth cookie on the client side
+    const authCookie = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("auth="));
+    console.log("Auth Cookie:", authCookie);
+  }, []);
+
   return (
     <div class="bg-gradient-to-r from-gray-900 to-gray-800 min-h-screen pb-10 flex flex-col items-center justify-center">
       <div class="flex flex-row gap-2 items-center">
@@ -74,7 +83,7 @@ export default function Home({ data }: PageProps<Data>) {
         You currently {data.isAllowed ? "are" : "are not"} logged in.
       </div>
       {!data.isAllowed ? <Login /> : <a href="/logout" class="text-blue-500 hover:text-blue-300">Logout</a>}
-      {data.error && <ErrorHandler initialError={data.error} />} {/* Use the ErrorHandler component */}
+      {data.error && <ErrorHandler initialError={data.error} />}
     </div>
   );
 }

@@ -1,17 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from "preact/hooks";
 import axios from "axios-web";
 import QrCodeGenerator from "../islands/QrCodeGenerator.tsx";
-import IconQrcode from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/qrcode.tsx";
-import IconCopy from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/copy.tsx";
-import IconArchive from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/archive.tsx";
-import IconDeviceFloppy from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/device-floppy.tsx";
-import IconEdit from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/edit.tsx";
-import IconTrash from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/trash.tsx";
 import IconTrashX from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/trash-x.tsx";
-import IconX from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/x.tsx";
 import Search from "./Search.tsx";
+import UrlList from "../islands/UrlList.tsx";
 
-interface UrlEntry {
+export interface UrlEntry {
   id: string;
   originalUrl: string;
   shortUrl: string;
@@ -25,10 +19,6 @@ function ensureProtocol(url: string): string {
   return url;
 }
 
-function sanitizeInput(input: string): string {
-  return input.replace(/[^a-zA-Z0-9-_]/g, "");
-}
-
 export default function UrlShortenerView(
   props: { initialData: UrlEntry[]; latency: number },
 ) {
@@ -36,6 +26,7 @@ export default function UrlShortenerView(
   const [filteredData, setFilteredData] = useState(props.initialData); // State for filtered data
   const [adding, setAdding] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [lastSelectedIndex, setLastSelectedIndex] = useState<number | null>(null);
   const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
   const urlInput = useRef<HTMLInputElement>(null);
 
@@ -52,17 +43,28 @@ export default function UrlShortenerView(
     );
   }, [props.initialData]);
 
-  const toggleSelect = (id: string) => {
-    setSelected((prevSelected) => {
-      const newSelected = new Set(prevSelected);
+const toggleSelect = (id: string, index: number, event: Event) => {
+  const { shiftKey } = event as KeyboardEvent;
+  setSelected((prevSelected) => {
+    const newSelected = new Set(prevSelected);
+    if (shiftKey && lastSelectedIndex !== null) {
+      const start = Math.min(lastSelectedIndex, index);
+      const end = Math.max(lastSelectedIndex, index);
+      for (let i = start; i <= end; i++) {
+        newSelected.add(data[i].id);
+      }
+    } else {
       if (newSelected.has(id)) {
         newSelected.delete(id);
       } else {
         newSelected.add(id);
       }
-      return newSelected;
-    });
-  };
+      setLastSelectedIndex(index);
+    }
+    return newSelected;
+  });
+};
+
 
   const anySelected = selected.size > 0;
 
@@ -188,7 +190,7 @@ export default function UrlShortenerView(
               href="/s/archive"
               class="px-1 py-1 text-gray-400 hover:bg-gray-700 hover:text-white rounded flex gap-1 text-xs ml-auto"
             >
-              <IconTrash class="w-4 h-4" />
+              <IconTrashX class="w-4 h-4" />
               View Archived Links
             </a>
           </div>
@@ -216,21 +218,15 @@ export default function UrlShortenerView(
           </div>
         </div>
 
-        <div>
-          {filteredData.map((url) => (
-            <UrlItem
-              key={url.id}
-              url={url}
-              data={data}
-              updateUrl={updateUrl}
-              archiveUrl={archiveUrl}
-              selected={selected.has(url.id)}
-              toggleSelect={toggleSelect}
-              generateQrCode={generateQrCode}
-              qrCodeUrl={qrCodeUrl}
-            />
-          ))}
-        </div>
+        <UrlList
+          data={filteredData}
+          updateUrl={updateUrl}
+          archiveUrl={archiveUrl}
+          selected={selected}
+          toggleSelect={toggleSelect}
+          generateQrCode={generateQrCode}
+          qrCodeUrl={qrCodeUrl}
+        />
 
         {qrCodeUrl && (
           <QrCodeGenerator
@@ -271,208 +267,6 @@ export default function UrlShortenerView(
             </a>
           </p>
         </div>
-      </div>
-    </div>
-  );
-}
-
-function UrlItem({
-  url,
-  data,
-  updateUrl,
-  archiveUrl,
-  selected,
-  toggleSelect,
-  generateQrCode,
-  qrCodeUrl,
-}: {
-  url: UrlEntry;
-  data: UrlEntry[];
-  updateUrl: (id: string, newShortUrl: string) => void;
-  archiveUrl: (id: string) => void;
-  selected: boolean;
-  toggleSelect: (id: string) => void;
-  generateQrCode: (id: string) => void;
-  qrCodeUrl: string | null;
-}) {
-  const [editing, setEditing] = useState(false);
-  const [newShortUrlEnding, setNewShortUrlEnding] = useState(
-    url.shortUrl.split("/").pop() || "",
-  );
-  const [error, setError] = useState("");
-  const [copied, setCopied] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  const handleEdit = () => {
-    setEditing(true);
-    setTimeout(() => inputRef.current?.focus(), 0);
-  };
-  const handleKeyDown = (event: KeyboardEvent) => {
-    if (event.key === "Enter") {
-      handleSave();
-    }
-  };
-
-  const handleSave = () => {
-    const sanitizedEnding = sanitizeInput(newShortUrlEnding);
-    const baseUrl = url.shortUrl.split("/").slice(0, -1).join("/");
-    const newShortUrl = `${baseUrl}/${sanitizedEnding}`;
-
-    if (
-      data.some((entry) =>
-        entry.shortUrl === newShortUrl && entry.id !== url.id
-      )
-    ) {
-      setError("That one is already taken!");
-      return;
-    }
-
-    updateUrl(url.id, newShortUrl);
-    setEditing(false);
-    setError("");
-  };
-
-  const handleCancel = () => {
-    setNewShortUrlEnding(url.shortUrl.split("/").pop() || "");
-    setEditing(false);
-    setError("");
-  };
-
-  const handleArchive = () => {
-    archiveUrl(url.id);
-  };
-
-  const handleGenerateQrCode = () => {
-    generateQrCode(url.id);
-  };
-
-  const handleCopy = () => {
-    navigator.clipboard.writeText(url.shortUrl).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    });
-  };
-
-  const getShortenedUrl = (url: string) => {
-    if (url.length > 40) {
-      return url.slice(0, 17) + "...";
-    }
-    return url;
-  };
-
-  return (
-    <div
-      class={`flex flex-col sm:flex-row p-4 gap-4 border-b border-gray-700 items-center ${
-        qrCodeUrl === url.shortUrl ? "bg-gray-600" : "bg-gray-800"
-      }`}
-    >
-      <input
-        type="checkbox"
-        checked={selected}
-        onChange={() => toggleSelect(url.id)}
-        class="mr-2"
-      />
-      <div class="flex w-full gap-2">
-        <div class="flex flex-col font-mono">
-          {!editing && (
-            <div class="flex items-center">
-              <a
-                href={url.shortUrl}
-                class="text-blue-400 hover:text-blue-300 hover:underline"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {getShortenedUrl(url.shortUrl)}
-              </a>
-              <button
-                class="ml-2 rounded flex items-center text-blue-400 hover:text-blue-300 active:text-green-400"
-                onClick={handleCopy}
-                title="Copy"
-              >
-                <IconCopy />
-              </button>
-              {copied && (
-                <div class="text-xs ml-2 text-green-400">
-                  Copied to clipboard!
-                </div>
-              )}
-            </div>
-          )}
-          <a
-            href={url.originalUrl}
-            class="text-xs opacity-50 leading-loose hover:text-blue-400 hover:underline text-gray-400"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {url.originalUrl.length > 40
-              ? url.originalUrl.slice(0, 40) + "..."
-              : url.originalUrl}
-          </a>
-          <div class="text-xs text-gray-500">Created at: {url.timestamp}</div>
-          {editing && (
-            <>
-              <span class="text-gray-400">{url.shortUrl.split("/").slice(0, -1).join("/")}/</span>
-              <input
-                class={`border rounded w-full py-2 px-3 mr-4 bg-gray-700 text-white ${
-                  error ? "border-red-600" : ""
-                }`}
-                value={newShortUrlEnding}
-                onInput={(e) =>
-                  setNewShortUrlEnding((e.target as HTMLInputElement).value)}
-                ref={inputRef}
-                onKeyDown={handleKeyDown}
-                style={{ minWidth: "10ch" }} // Minimum width to prevent squishing
-              />
-              {error && <p class="text-red-600 text-xs">{error}</p>}
-            </>
-          )}
-        </div>
-      </div>
-
-      <div class="flex p-4 gap-2 items-center sm:flex-end">
-        {!editing && (
-          <button
-            class="p-2 ml-2 text-gray-400 hover:bg-gray-700 hover:text-white rounded flex items-center"
-            onClick={handleEdit}
-            title="Edit"
-          >
-            <IconEdit />
-          </button>
-        )}
-        {editing && (
-          <>
-            <button
-              class="p-2 mr-2 text-blue-400 rounded flex items-center hover:bg-gray-700"
-              onClick={handleSave}
-              title="Save"
-            >
-              <IconDeviceFloppy />
-            </button>
-
-            <button
-              class="p-2 mr-2 text-red-500 rounded flex items-center hover:bg-gray-700"
-              onClick={handleCancel}
-              title="Cancel"
-            >
-              <IconX />
-            </button>
-          </>
-        )}
-        <button
-          class="p-2 ml-2 text-gray-400 hover:bg-gray-700 hover:text-white rounded flex items-center"
-          onClick={handleGenerateQrCode}
-          title="Generate QR Code"
-        >
-          <IconQrcode />
-        </button>
-
-        <button
-          class="p-2 ml-2 text-gray-400 hover:bg-gray-700 hover:text-white rounded flex items-center"
-          onClick={handleArchive}
-          title="Archive"
-        >
-          <IconTrashX />
-        </button>
       </div>
     </div>
   );

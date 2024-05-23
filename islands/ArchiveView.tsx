@@ -149,10 +149,10 @@ export default function ArchivesView(props: { initialData: UrlEntry[]; latency: 
                 : (
                   <button
                     type="button"
-                    class="px-1 py-1 rounded flex gap-1 text-xs hover:bg-gray-700 hover:text-white"
+                    class="text-white px-1 py-1 rounded flex gap-1 text-xs hover:bg-gray-700 hover:text-white"
                     onClick={deselectAll}
                   >
-                    <IconDeselect class="w-4 h-4" />
+                    <IconDeselect class="w-4 h-4 text-red-500" />
                     Deselect All
                   </button>
                 )}

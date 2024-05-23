@@ -1,6 +1,6 @@
 import { Handlers } from "$fresh/server.ts";
 import { setCookie } from "https://deno.land/std@0.203.0/http/cookie.ts";
-import { getUser } from "../../services/database.ts";
+import { getUser, saveSession } from "../../services/database.ts";
 
 export const handler: Handlers = {
   async POST(req) {
@@ -12,20 +12,27 @@ export const handler: Handlers = {
     const user = await getUser(username);
 
     if (user && user.password === password) {
+      const sessionId = crypto.randomUUID();
+      await saveSession(user.id, sessionId);
+
       const headers = new Headers();
       setCookie(headers, {
         name: "auth",
-        value: "bar", // this should be a unique value for each session
+        value: sessionId,
         maxAge: 1200,
-        sameSite: "Lax", // this is important to prevent CSRF attacks
+        sameSite: "Lax",
         domain: url.hostname,
         path: "/",
         secure: true,
       });
 
+      // Log the session ID and cookie
+      console.log("Session ID:", sessionId);
+      console.log("Cookie set:", `auth=${sessionId}`);
+
       headers.set("location", "/");
       return new Response(null, {
-        status: 303, // "See Other"
+        status: 303,
         headers,
       });
     } else {
