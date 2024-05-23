@@ -1,4 +1,3 @@
-// login.ts
 import { Handlers } from "$fresh/server.ts";
 import { setCookie } from "https://deno.land/std@0.203.0/http/cookie.ts";
 import { getUser } from "../../services/database.ts";
@@ -24,14 +23,17 @@ export const handler: Handlers = {
         secure: true,
       });
 
-      headers.set("location", "/s/");
+      headers.set("location", "/");
       return new Response(null, {
         status: 303, // "See Other"
         headers,
       });
     } else {
+      const headers = new Headers({ "Content-Type": "application/json" });
+      headers.set("location", "/login?error=Invalid%20username%20or%20password");
       return new Response(null, {
-        status: 403,
+        status: 303,
+        headers,
       });
     }
   },

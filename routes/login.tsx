@@ -1,14 +1,19 @@
+import { h } from "preact"; // Import h from preact
 import type { Handlers, PageProps } from "$fresh/server.ts";
 import { getCookies } from "https://deno.land/std@0.203.0/http/cookie.ts";
+import ErrorHandler from "../islands/ErrorHandler.tsx"; // Import the ErrorHandler component
 
 interface Data {
   isAllowed: boolean;
+  error?: string; // Add an error property to the Data interface
 }
 
 export const handler: Handlers = {
   GET(req, ctx) {
+    const url = new URL(req.url);
     const cookies = getCookies(req.headers);
-    return ctx.render!({ isAllowed: cookies.auth === "bar" });
+    const error = url.searchParams.get("error"); // Get error message from URL parameters
+    return ctx.render!({ isAllowed: cookies.auth === "bar", error });
   },
 };
 
@@ -17,11 +22,11 @@ function Login() {
     <form
       method="post"
       action="/api/login"
-      class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
+      class="bg-gray-800 shadow-md rounded px-8 pt-6 pb-8 mb-4"
     >
       <div class="mb-4">
         <label
-          class="block text-gray-700 text-sm font-bold mb-2"
+          class="block text-gray-400 text-sm font-bold mb-2"
           htmlFor="username"
         >
           Username
@@ -30,12 +35,12 @@ function Login() {
           type="text"
           name="username"
           id="username"
-          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          class="shadow appearance-none border border-gray-600 rounded w-full py-2 px-3 bg-gray-700 text-gray-200 leading-tight focus:outline-none focus:shadow-outline"
         />
       </div>
       <div class="mb-6">
         <label
-          class="block text-gray-700 text-sm font-bold mb-2"
+          class="block text-gray-400 text-sm font-bold mb-2"
           htmlFor="password"
         >
           Password
@@ -44,7 +49,7 @@ function Login() {
           type="password"
           name="password"
           id="password"
-          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
+          class="shadow appearance-none border border-gray-600 rounded w-full py-2 px-3 bg-gray-700 text-gray-200 mb-3 leading-tight focus:outline-none focus:shadow-outline"
         />
       </div>
       <div class="flex items-center justify-between">
@@ -61,14 +66,15 @@ function Login() {
 
 export default function Home({ data }: PageProps<Data>) {
   return (
-    <div class="bg-gradient-to-r from-blue-500 to-indigo-600 min-h-screen pb-10 flex flex-col items-center justify-center">
+    <div class="bg-gradient-to-r from-gray-900 to-gray-800 min-h-screen pb-10 flex flex-col items-center justify-center">
       <div class="flex flex-row gap-2 items-center">
         <h1 class="font-bold text-white text-2xl mb-4">🧗 advrk.io</h1>
       </div>
-      <div class=" mb-4 text-white">
-        Youz currently {data.isAllowed ? "are" : "not be"} logged in.
+      <div class="mb-4 text-gray-400">
+        You currently {data.isAllowed ? "are" : "are not"} logged in.
       </div>
-      {!data.isAllowed ? <Login /> : <a href="/logout">Logout</a>}
+      {!data.isAllowed ? <Login /> : <a href="/logout" class="text-blue-500 hover:text-blue-300">Logout</a>}
+      {data.error && <ErrorHandler initialError={data.error} />} {/* Use the ErrorHandler component */}
     </div>
   );
 }

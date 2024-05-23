@@ -26,7 +26,9 @@ import * as $ArchiveView from "./islands/ArchiveView.tsx";
 import * as $ArchiveView2 from "./islands/ArchiveView2.tsx";
 import * as $Counter from "./islands/Counter.tsx";
 import * as $CreateUserForm from "./islands/CreateUserForm.tsx";
+import * as $ErrorHandler from "./islands/ErrorHandler.tsx";
 import * as $Footer from "./islands/Footer.tsx";
+import * as $Notification from "./islands/Notification.tsx";
 import * as $QrCodeGenerator from "./islands/QrCodeGenerator.tsx";
 import * as $Search from "./islands/Search.tsx";
 import * as $TopBar from "./islands/TopBar.tsx";
@@ -62,7 +64,9 @@ const manifest = {
     "./islands/ArchiveView2.tsx": $ArchiveView2,
     "./islands/Counter.tsx": $Counter,
     "./islands/CreateUserForm.tsx": $CreateUserForm,
+    "./islands/ErrorHandler.tsx": $ErrorHandler,
     "./islands/Footer.tsx": $Footer,
+    "./islands/Notification.tsx": $Notification,
     "./islands/QrCodeGenerator.tsx": $QrCodeGenerator,
     "./islands/Search.tsx": $Search,
     "./islands/TopBar.tsx": $TopBar,
