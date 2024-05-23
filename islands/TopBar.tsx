@@ -9,16 +9,18 @@ import IconTextScan2 from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/text-s
 import IconArrowBigLeft from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/arrow-big-left.tsx";
 import IconUserPlus from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/user-plus.tsx";
 import IconUsersGroup from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/users-group.tsx";
+import IconChevronDown from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/chevron-down.tsx";
 
 export default function TopBar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [isUrlDropdownOpen, setIsUrlDropdownOpen] = useState(false);
+  const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
   const [activePath, setActivePath] = useState<string>("");
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setActivePath(window.location.pathname);
-    // Check login status, for example, by checking a cookie
     const cookies = document.cookie.split(";").reduce((acc, cookie) => {
       const [name, value] = cookie.split("=").map(c => c.trim());
       acc[name] = value;
@@ -31,10 +33,20 @@ export default function TopBar() {
     setIsOpen(!isOpen);
   };
 
+  const toggleUrlDropdown = () => {
+    setIsUrlDropdownOpen(!isUrlDropdownOpen);
+  };
+
+  const toggleUserDropdown = () => {
+    setIsUserDropdownOpen(!isUserDropdownOpen);
+  };
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
         setIsOpen(false);
+        setIsUrlDropdownOpen(false);
+        setIsUserDropdownOpen(false);
       }
     };
 
@@ -51,19 +63,20 @@ export default function TopBar() {
 
   return (
     <nav class="bg-gray-900 border-b border-gray-700 shadow-sm top-0 w-full z-50" ref={menuRef}>
-      <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
-        <div class="relative flex items-center justify-between h-16">
-          <div class="absolute inset-y-0 left-0 flex items-center">
-            <button
-              onClick={toggleMenu}
-              class="inline-flex items-center justify-center p-2 rounded-md text-gray-300 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
-            >
-              <IconMenu2 class="h-6 w-6" aria-hidden="true" />
-            </button>
-            <a href="/" class="ml-1 text-xl font-semibold text-white">🧗 advrk.io</a>
-          </div>
-        </div>
-      </div>
+      <div class="w-full px-2 sm:px-6 lg:px-8">
+  <div class="relative flex items-center justify-between h-16">
+    <div class="absolute inset-y-0 left-0 flex items-center">
+      <button
+        onClick={toggleMenu}
+        class="inline-flex items-center justify-center p-2 rounded-md text-gray-300 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
+      >
+        <IconMenu2 class="h-6 w-6" aria-hidden="true" />
+      </button>
+      <a href="/" class="ml-1 text-xl font-semibold text-white">🧗 advrk.io</a>
+    </div>
+  </div>
+</div>
+
 
       <div
         class={`absolute inset-0 bg-gray-900 z-50 transition-transform transform top-0 left-0 bottom-0 w-64 shadow-lg space-y-1 p-4 ${
@@ -83,26 +96,57 @@ export default function TopBar() {
           </a>
           {isLoggedIn && (
             <>
-              <a href="/s/" class={getLinkClass("/s/")}>
-                <IconTextScan2 class="h-6 w-6 mr-1" />
-                URL Shortener
-              </a>
-              <a href="/s/archive" class={getLinkClass("/s/archive")}>
-                <IconArchiveFilled class="h-6 w-6 mr-1" />
-                URL Archive
-              </a>
-              <a href="/s/data" class={getLinkClass("/s/data")}>
-                <IconDatabase class="h-6 w-6 mr-1" />
-                URL Database
-              </a>
-              <a href="/u/create" class={getLinkClass("/u/create")}>
-                <IconUserPlus class="h-6 w-6 mr-1" />
-                Create User
-              </a>
-              <a href="/u/db" class={getLinkClass("/u/db")}>
-                <IconUsersGroup class="h-6 w-6 mr-1" />
-                User Database
-              </a>
+              <div class="relative">
+                <button
+                  onClick={toggleUrlDropdown}
+                  class="flex items-center w-full px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:bg-gray-700 focus:outline-none"
+                >
+                  <IconTextScan2 class="h-6 w-6 mr-1" />
+                  URL Shortener
+                  <IconChevronDown
+                    class={`h-5 w-5 ml-auto transition-transform ${
+                      isUrlDropdownOpen ? "rotate-180" : "rotate-0"
+                    }`}
+                  />
+                </button>
+                {isUrlDropdownOpen && (
+                  <div class="ml-8 mt-1 space-y-1">
+                    <a href="/s/" class={getLinkClass("/s/")}>
+                      App
+                    </a>
+                    <a href="/s/archive" class={getLinkClass("/s/archive")}>
+                      Archive
+                    </a>
+                    <a href="/s/data" class={getLinkClass("/s/data")}>
+                      Database
+                    </a>
+                  </div>
+                )}
+              </div>
+              <div class="relative">
+                <button
+                  onClick={toggleUserDropdown}
+                  class="flex items-center w-full px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:bg-gray-700 focus:outline-none"
+                >
+                  <IconUsersGroup class="h-6 w-6 mr-1" />
+                  Users
+                  <IconChevronDown
+                    class={`h-5 w-5 ml-auto transition-transform ${
+                      isUserDropdownOpen ? "rotate-180" : "rotate-0"
+                    }`}
+                  />
+                </button>
+                {isUserDropdownOpen && (
+                  <div class="ml-8 mt-1 space-y-1">
+                    <a href="/u/create" class={getLinkClass("/u/create")}>
+                      Create
+                    </a>
+                    <a href="/u/db" class={getLinkClass("/u/db")}>
+                      Database
+                    </a>
+                  </div>
+                )}
+              </div>
             </>
           )}
           {isLoggedIn ? (
