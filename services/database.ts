@@ -12,8 +12,10 @@ export type UrlSchema = z.infer<typeof urlSchema>;
 const BASE_URL = Deno.env.get("BASE_URL") || "https://advrk.io";
 // http://localhost:8000
 // https://advrk.io
+// http://localhost:8000/s
+// https://advrk.io/s
 
-function generateShortId(length = 7) {
+function generateShortId(length = 4) {
   const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
   let result = '';
   for (let i = 0; i < length; i++) {
@@ -29,6 +31,29 @@ export async function createUrlEntry(originalUrl: string): Promise<string> {
   await kv.set(["url", id], urlEntry);
   return shortUrl;
 }
+
+export async function isDuplicateUrl(originalUrl: string): Promise<boolean> {
+  const it = kv.list({ prefix: ["url"] });
+  for await (const entry of it) {
+    const url = entry.value as UrlSchema;
+    if (!url.archived && url.originalUrl === originalUrl) {
+      return true;
+    }
+  }
+  return false;
+}
+
+export async function isDuplicateShortUrl(shortUrl: string): Promise<boolean> {
+  const it = kv.list({ prefix: ["url"] });
+  for await (const entry of it) {
+    const url = entry.value as UrlSchema;
+    if (!url.archived && url.shortUrl === shortUrl) {
+      return true;
+    }
+  }
+  return false;
+}
+
 
 export async function getAllUrls(): Promise<Array<{ id: string } & UrlSchema>> {
   const urls = [];

@@ -3,25 +3,32 @@ import { Head } from "$fresh/runtime.ts";
 export default function Error404() {
   return (
     <>
-      <Head>
-        <title>404 - Page not found</title>
-      </Head>
-      <div class="px-4 py-8 mx-auto bg-[#86efac]">
-        <div class="max-w-screen-md mx-auto flex flex-col items-center justify-center">
-          <img
-            class="my-6"
-            src="/logo.svg"
-            width="128"
-            height="128"
-            alt="the Fresh logo: a sliced lemon dripping with juice"
-          />
-          <h1 class="text-4xl font-bold">404 - Page not found</h1>
-          <p class="my-4">
-            The page you were looking for doesn't exist.
-          </p>
-          <a href="/" class="underline">Go back home</a>
+      {/*
+        This example requires updating your template:
+
+        ```
+        <html class="h-full">
+        <body class="h-full">
+        ```
+      */}
+      <main className="grid min-h-full place-items-center bg-white px-6 py-24 sm:py-32 lg:px-8">
+        <div className="text-center">
+          <p className="text-base font-semibold text-blue-600">404</p>
+          <h1 className="mt-4 text-3xl font-bold tracking-tight text-gray-900 sm:text-5xl">Page not found</h1>
+          <p className="mt-6 text-base leading-7 text-gray-600">Sorry, we couldn’t find the page you’re looking for.</p>
+          <div className="mt-10 flex items-center justify-center gap-x-6">
+            <a
+              href="/"
+              className="rounded-md bg-blue-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+            >
+              Go back home
+            </a>
+            <a href="https://bringinthecats.com" className="text-sm font-semibold text-gray-900">
+              Bring in the cats <span aria-hidden="true">&rarr;</span>
+            </a>
+          </div>
         </div>
-      </div>
+      </main>
     </>
-  );
+  )
 }

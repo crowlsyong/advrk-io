@@ -26,7 +26,9 @@ export default function Home({ data }: PageProps) {
         <button type="submit">Shorten</button>
       </form>
       <ul>
-        {data.urls.map((url: { id: string, shortUrl: string, originalUrl: string }) => (
+        {data.urls.map((
+          url: { id: string; shortUrl: string; originalUrl: string },
+        ) => (
           <li key={url.id}>
             <a href={url.shortUrl}>{url.shortUrl}</a> - {url.originalUrl}
           </li>

@@ -14,9 +14,16 @@ export const handler: Handlers = {
 
 function Login() {
   return (
-    <form method="post" action="/api/login" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+    <form
+      method="post"
+      action="/api/login"
+      class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
+    >
       <div class="mb-4">
-        <label class="block text-gray-700 text-sm font-bold mb-2" htmlFor="username">
+        <label
+          class="block text-gray-700 text-sm font-bold mb-2"
+          htmlFor="username"
+        >
           Username
         </label>
         <input
@@ -27,7 +34,10 @@ function Login() {
         />
       </div>
       <div class="mb-6">
-        <label class="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
+        <label
+          class="block text-gray-700 text-sm font-bold mb-2"
+          htmlFor="password"
+        >
           Password
         </label>
         <input
@@ -51,12 +61,12 @@ function Login() {
 
 export default function Home({ data }: PageProps<Data>) {
   return (
-    <div class="min-h-screen flex flex-col items-center justify-center bg-gray-100">
-            <div class="flex flex-row gap-2 items-center">
-            <h1 class="font-bold text-2xl mb-4">🧗 advrk.io</h1>
-          </div>
+    <div class="pt-16 flex flex-col items-center justify-center">
+      <div class="flex flex-row gap-2 items-center">
+        <h1 class="font-bold text-2xl mb-4">🧗 advrk.io</h1>
+      </div>
       <div class="text-2xl mb-4">
-      You currently {data.isAllowed ? "are" : "are not"} logged in.
+        You currently {data.isAllowed ? "are" : "are not"} logged in.
       </div>
       {!data.isAllowed ? <Login /> : <a href="/logout">Logout</a>}
     </div>

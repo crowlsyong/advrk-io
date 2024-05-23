@@ -1,6 +1,9 @@
 import { h } from "preact";
 import { useEffect, useRef, useState } from "preact/hooks";
 import { qrcode } from "https://deno.land/x/qrcode@v2.0.0/mod.ts";
+import IconDownload from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/download.tsx";
+import IconSquareRoundedPlus2 from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/square-rounded-plus-2.tsx";
+import IconX from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/x.tsx";
 
 interface QrCodeGeneratorProps {
   shortUrl: string;
@@ -8,7 +11,9 @@ interface QrCodeGeneratorProps {
   onClose: () => void;
 }
 
-const QrCodeGenerator = ({ shortUrl, originalUrl, onClose }: QrCodeGeneratorProps) => {
+const QrCodeGenerator = (
+  { shortUrl, originalUrl, onClose }: QrCodeGeneratorProps,
+) => {
   const [src, setSrc] = useState("");
   const popupRef = useRef<HTMLDivElement>(null);
 
@@ -46,7 +51,9 @@ const QrCodeGenerator = ({ shortUrl, originalUrl, onClose }: QrCodeGeneratorProp
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (popupRef.current && !popupRef.current.contains(event.target as Node)) {
+      if (
+        popupRef.current && !popupRef.current.contains(event.target as Node)
+      ) {
         onClose();
       }
     };
@@ -60,40 +67,63 @@ const QrCodeGenerator = ({ shortUrl, originalUrl, onClose }: QrCodeGeneratorProp
   return (
     <>
       <div class="fixed inset-0 bg-gray-500 bg-opacity-75 flex justify-center items-center z-50">
-        <div ref={popupRef} class="relative bg-white p-4 rounded shadow-lg max-w-sm w-full">
+        <div
+          ref={popupRef}
+          class="relative bg-gray-100 p-4 rounded shadow-lg max-w-sm w-full"
+        >
           <div class="mb-4">
             <h2 class="text-lg font-semibold mb-2">QR Code for:</h2>
-            <p class="text-sm text-gray-700">{shortUrl}</p>
-            <p class="text-xs text-gray-500">{originalUrl}</p>
+            <p class="text-sm text-gray-700 pb-2">
+              <a
+                href={shortUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="underline text-blue-500 hover:text-blue-700"
+              >
+                {shortUrl}
+              </a>
+            </p>
+            <p class="text-xs text-gray-500">
+              Redirects to{" "}
+              <a
+                href={originalUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="bg-green-500 text-white hover:bg-green-400 p-1"
+              >
+                {originalUrl}
+              </a>
+            </p>
           </div>
+
           {src && (
             <img
               src={src}
               alt={`QR Code for ${shortUrl}`}
-              className="w-32 h-32 mx-auto mb-4"
+              className="w-60 h-60 mx-auto mb-4"
             />
           )}
           {src && (
-            <div className="flex justify-center space-x-4">
-              <button
-                onClick={handleDownloadBase64Image}
-                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-              >
-                Download Base64 Image
-              </button>
+            <div className="flex flex-col justify-center gap-2">
               <button
                 onClick={handleOpenImageInNewTab}
-                className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+                className="text-sm p-2 text-gray-600 hover:bg-gray-200 hover:text-black rounded flex items-center justify-center w-full"
               >
-                Open Image in New Tab
+                <IconSquareRoundedPlus2 className="mr-1" /> Open in new tab
+              </button>
+              <button
+                onClick={handleDownloadBase64Image}
+                className="text-sm p-2 text-gray-600 bg-blue-600 text-white hover:bg-blue-500 hover:text-white rounded flex items-center justify-center w-full"
+              >
+                <IconDownload className="mr-1" /> Download
               </button>
             </div>
           )}
           <button
-            class="absolute top-2 right-2 p-2 bg-red-500 text-white rounded-full"
+            class="absolute top-2 right-2 p-2 bg-red-500 text-white hover:bg-red-400 rounded-full"
             onClick={onClose}
           >
-            ✕
+            <IconX />
           </button>
         </div>
       </div>

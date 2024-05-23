@@ -2,14 +2,13 @@ import { useCallback, useRef, useState } from "preact/hooks";
 import axios from "axios-web";
 import QrCodeGenerator from "../islands/QrCodeGenerator.tsx";
 import IconQrcode from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/qrcode.tsx";
-import IconQrcodeOff from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/qrcode-off.tsx";
-import IconHttpDelete from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/http-delete.tsx";
 import IconCopy from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/copy.tsx";
-import IconDatabase from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/database.tsx";
 import IconArchive from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/archive.tsx";
 import IconDeviceFloppy from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/device-floppy.tsx";
-import IconArchiveFilled from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/archive-filled.tsx";
 import IconEdit from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/edit.tsx";
+import IconTrash from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/trash.tsx"
+import IconTrashX from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/trash-x.tsx"
+import IconX from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/x.tsx"
 
 interface UrlEntry {
   id: string;
@@ -48,6 +47,8 @@ export default function UrlShortenerView(
       return newSelected;
     });
   };
+
+  const anySelected = selected.size > 0;
 
   
   const addUrl = useCallback(async () => {
@@ -137,8 +138,15 @@ export default function UrlShortenerView(
     <div class="flex gap-2 w-full items-center justify-center py-8 px-4 sm:px-6 lg:px-8">
       <div class="w-full max-w-4xl mx-auto sm:px-6 lg:px-8 bg-gray-100 border border-black rounded p-4">
         <div class="flex flex-col pb-4">
-          <div class="flex flex-row gap-2 items-center">
-            <h1 class="font-bold text-xl m-4">🤏 URL Shortener</h1>
+                 <div class="flex flex-row gap-2 items-center">
+          <h1 class="font-bold text-xl m-4">🤏 URL Shortener</h1>
+            <a
+              href="/archive"
+              class="px-1 py-1 text-gray-600  hover:bg-gray-200 hover:text-black rounded flex gap-1 text-xs ml-auto"
+            >
+              <IconTrash class="w-4 h-4" />
+              View Archived Links
+            </a>
           </div>
           <div class="flex gap-2">
             <input
@@ -184,14 +192,16 @@ export default function UrlShortenerView(
         <div class="flex flex-col py-4 gap-2 sm:items-end">
           <div class="flex">
           </div>
-          <button
-            class="text-sm p-2 rounded text-white bg-red-500 disabled:opacity-50 disabled:bg-gray-100 disabled:text-gray-500 flex items-center"
-            onClick={archiveSelected}
-            disabled={selected.size === 0}
-          >
-            <IconArchive class="mr-2" />
-            Archive Selected
-          </button>
+          {anySelected && (
+  <button
+    class="text-sm p-2 rounded text-white bg-red-500 disabled:opacity-50 disabled:bg-gray-100 disabled:text-gray-500 flex items-center"
+    onClick={archiveSelected}
+  >
+    <IconTrashX class="mr-2" />
+    Archive Selected
+  </button>
+)}
+
         </div>
         <div class="pt-6 opacity-50 text-sm">
           <p>Initial data fetched in {props.latency}ms</p>
@@ -245,6 +255,11 @@ function UrlItem({
   const handleEdit = () => {
     setEditing(true);
     setTimeout(() => inputRef.current?.focus(), 0);
+  };
+  const handleKeyDown = (event: KeyboardEvent) => {
+    if (event.key === "Enter") {
+      handleSave();
+    }
   };
 
   const handleSave = () => {
@@ -300,13 +315,14 @@ function UrlItem({
         qrCodeUrl === url.shortUrl ? "bg-green-300" : ""
       }`}
     >
-      <div class="flex w-full gap-2">
-        <input
+           <input
           type="checkbox"
           checked={selected}
           onChange={() => toggleSelect(url.id)}
           class="mr-2"
         />
+      <div class="flex w-full gap-2">
+   
         <div class="flex flex-col font-mono">
           {!editing && (
             <div class="flex items-center">
@@ -319,7 +335,7 @@ function UrlItem({
                 {getShortenedUrl(url.shortUrl)}
               </a>
               <button
-                class="p-2 ml-2 rounded flex items-center text-blue-500 hover:text-blue-400 active:text-green-500"
+                class="ml-2 rounded flex items-center text-blue-500 hover:text-blue-400 active:text-green-500"
                 onClick={handleCopy}
                 title="Copy"
               >
@@ -332,16 +348,15 @@ function UrlItem({
               )}
             </div>
           )}
-       <a 
-  href={url.originalUrl}
-  class="text-xs opacity-50 leading-loose hover:text-blue-500 hover:underline"
-  target="_blank"
-  rel="noopener noreferrer"
->
-  {url.originalUrl.length > 40 ? url.originalUrl.slice(0, 40) + '...' : url.originalUrl}
-</a>
-
-
+          
+          <a 
+            href={url.originalUrl}
+            class="text-xs opacity-50 leading-loose hover:text-blue-600 hover:underline"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {url.originalUrl.length > 40 ? url.originalUrl.slice(0, 40) + '...' : url.originalUrl}
+          </a>
           {editing && (
             <>
               <span>{url.shortUrl.split("/").slice(0, -1).join("/")}/</span>
@@ -353,6 +368,7 @@ function UrlItem({
                 onInput={(e) =>
                   setNewShortUrlEnding((e.target as HTMLInputElement).value)}
                 ref={inputRef}
+                onKeyDown={handleKeyDown}
                 style={{ minWidth: "10ch" }} // Minimum width to prevent squishing
               />
               {error && <p class="text-red-600 text-xs">{error}</p>}
@@ -364,7 +380,7 @@ function UrlItem({
       <div class="flex p-4 gap-2 items-center sm:flex-end">
         {!editing && (
           <button
-            class="p-2 ml-2 bg-blue-200 rounded flex items-center"
+            class="p-2 ml-2  text-gray-600  hover:bg-gray-200 hover:text-black rounded flex items-center"
             onClick={handleEdit}
             title="Edit"
           >
@@ -374,7 +390,7 @@ function UrlItem({
         {editing && (
           <>
             <button
-              class="p-2 mr-2 bg-blue-500 text-white rounded flex items-center"
+              class="p-2 mr-2 text-blue-500 rounded flex items-center hover:bg-gray-200"
               onClick={handleSave}
               title="Save"
             >
@@ -382,16 +398,16 @@ function UrlItem({
             </button>
 
             <button
-              class="p-2 border-2 rounded"
+              class="p-2 mr-2 text-red-500 rounded flex items-center hover:bg-gray-200"
               onClick={handleCancel}
               title="Cancel"
             >
-              ❌
+              <IconX />
             </button>
           </>
         )}
         <button
-          class="p-2 ml-2 bg-gray-200 rounded flex items-center"
+          class="p-2 ml-2 text-gray-600  hover:bg-gray-200 hover:text-black rounded flex items-center"
           onClick={handleGenerateQrCode}
           title="Generate QR Code"
         >
@@ -399,11 +415,11 @@ function UrlItem({
         </button>
 
         <button
-          class="p-2 ml-2 bg-red-200 rounded flex items-center"
+          class="p-2 ml-2  text-gray-600  hover:bg-gray-200 hover:text-black rounded flex items-center"
           onClick={handleArchive}
           title="Archive"
         >
-          <IconHttpDelete />
+          <IconTrashX />
         </button>
       </div>
     </div>

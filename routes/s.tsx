@@ -61,15 +61,9 @@ export const handler: Handlers = {
     });
   },
 };
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>hehawwwwww</title>
-<link rel="stylesheet" href="/styles.css" />
-</head>
+
 export default function Home({ data }: PageProps) {
   return (
-    
     <div>
       <UrlShortenerView initialData={data.urls} latency={0} />
     </div>
