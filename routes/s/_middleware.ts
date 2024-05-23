@@ -1,6 +1,5 @@
 import { FreshContext } from "$fresh/server.ts";
 import { getCookies } from "https://deno.land/std@0.203.0/http/cookie.ts";
-import { getSession } from "../../services/database.ts";
 
 export async function handler(req: Request, ctx: FreshContext) {
   const cookies = getCookies(req.headers);
