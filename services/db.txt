@@ -33,7 +33,12 @@ export async function saveSession(
   await kv.set(["session", sessionId], sessionEntry);
 }
 
-
+export async function getSession(
+  sessionId: string,
+): Promise<SessionSchema | undefined> {
+  const entry = await kv.get(["session", sessionId]);
+  return entry.value as SessionSchema | undefined;
+}
 const BASE_URL = Deno.env.get("BASE_URL") || "https://advrk.io";
 
 function generateShortId(length = 4) {
