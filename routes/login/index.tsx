@@ -9,14 +9,17 @@ interface Data {
   error?: string;
 }
 
-export const handler: Handlers = {
+export const handler: Handlers<Data> = {
   GET(req, ctx) {
     const url = new URL(req.url);
     const cookies = getCookies(req.headers);
-    const error = url.searchParams.get("error");
-    return ctx.render!({ isAllowed: cookies.auth === "bar", error });
+    const error = url.searchParams.get("error") || undefined; // Ensure error is undefined if null
+    const isAllowed = Boolean(cookies.auth); // Check if the auth cookie exists
+
+    return ctx.render!({ isAllowed, error });
   },
 };
+
 
 function Login() {
   return (

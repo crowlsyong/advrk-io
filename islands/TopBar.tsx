@@ -26,8 +26,9 @@ export default function TopBar() {
       acc[name] = value;
       return acc;
     }, {} as Record<string, string>);
-    setIsLoggedIn(cookies.auth === "bar");
+    setIsLoggedIn(Boolean(cookies.auth)); // Check if the auth cookie exists
   }, []);
+  
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);

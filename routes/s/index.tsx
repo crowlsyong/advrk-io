@@ -1,4 +1,3 @@
-// index.tsx
 import { Handlers, PageProps } from "$fresh/server.ts";
 import UrlShortenerView from "../../islands/UrlShortenerView.tsx";
 import { ShortenerService } from "../../services/shortener.ts";
@@ -20,7 +19,7 @@ interface Url {
 export const handler: Handlers<Data> = {
   async GET(req, ctx) {
     const cookies = getCookies(req.headers);
-    const isAllowed = cookies.auth === "bar";
+    const isAllowed = Boolean(cookies.auth); // Check if the auth cookie exists
 
     let urls: Url[] = [];
     if (isAllowed) {

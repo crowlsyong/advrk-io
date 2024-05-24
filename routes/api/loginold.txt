@@ -12,13 +12,12 @@ export const handler: Handlers = {
     const user = await getUser(username);
 
     if (user && user.password === password) {
-      const sessionId = crypto.randomUUID(); // Generate a unique session ID
       const headers = new Headers();
       setCookie(headers, {
         name: "auth",
-        value: sessionId, // Use the unique session ID
+        value: "bar", // this should be a unique value for each session
         maxAge: 1200,
-        sameSite: "Lax", // This is important to prevent CSRF attacks
+        sameSite: "Lax", // this is important to prevent CSRF attacks
         domain: url.hostname,
         path: "/",
         secure: true,
