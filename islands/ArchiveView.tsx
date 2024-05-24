@@ -133,7 +133,7 @@ export default function ArchivesView(props: { initialData: UrlEntry[]; latency: 
             onSearch={handleSearch}
           />
 
-          <div class="flex justify-between mt-2">
+          <div class="flex justify-between mt-2 pt-4">
             <div class="flex gap-1">
               {selected.size === 0
                 ? (

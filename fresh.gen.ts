@@ -10,9 +10,11 @@ import * as $api_check_duplicates from "./routes/api/check-duplicates.ts";
 import * as $api_joke from "./routes/api/joke.ts";
 import * as $api_login from "./routes/api/login.ts";
 import * as $archive2 from "./routes/archive2.tsx";
+import * as $f_middleware from "./routes/f_middleware.ts";
 import * as $greet_name_ from "./routes/greet/[name].tsx";
 import * as $index from "./routes/index.tsx";
-import * as $login from "./routes/login.tsx";
+import * as $indexold from "./routes/indexold.tsx";
+import * as $login_index from "./routes/login/index.tsx";
 import * as $logindex from "./routes/logindex.tsx";
 import * as $logout from "./routes/logout.ts";
 import * as $qr from "./routes/qr.tsx";
@@ -49,9 +51,11 @@ const manifest = {
     "./routes/api/joke.ts": $api_joke,
     "./routes/api/login.ts": $api_login,
     "./routes/archive2.tsx": $archive2,
+    "./routes/f_middleware.ts": $f_middleware,
     "./routes/greet/[name].tsx": $greet_name_,
     "./routes/index.tsx": $index,
-    "./routes/login.tsx": $login,
+    "./routes/indexold.tsx": $indexold,
+    "./routes/login/index.tsx": $login_index,
     "./routes/logindex.tsx": $logindex,
     "./routes/logout.ts": $logout,
     "./routes/qr.tsx": $qr,

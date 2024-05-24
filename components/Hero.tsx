@@ -6,7 +6,7 @@ interface HeroProps {
 
 export default function Hero({ isLoggedIn }: HeroProps): JSX.Element {
   return (
-    <div class="bg-gray-900 text-white min-h-[75vh] flex items-center">
+    <div class="bg-gray-800 text-white min-h-screen flex items-center">
       <div class="container mx-auto px-6 py-16 text-center">
         <h1 class="text-4xl md:text-6xl font-bold leading-tight mb-4">
           {isLoggedIn ? "Welcome back" : "Welcome to advrk.io"}

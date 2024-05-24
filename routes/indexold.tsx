@@ -2,7 +2,7 @@ import { Handlers } from "$fresh/server.ts";
 import { getCookies } from "https://deno.land/std@0.203.0/http/cookie.ts";
 
 export const handler: Handlers = {
-  GET(req, ctx) {
+  async GET(req, ctx) {
     const cookies = getCookies(req.headers);
     const isAllowed = cookies.auth === "bar";
 
