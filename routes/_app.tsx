@@ -8,7 +8,7 @@ interface Data {
 }
 
 export const handler: Handlers<Data> = {
-  async  GET(req, ctx) {
+    GET(req, ctx) {
     const cookies = getCookies(req.headers);
     const isAllowed = cookies.auth === "bar";
 
