@@ -1,11 +1,10 @@
 import { UrlEntry } from "./UrlShortenerView.tsx";
-import { useState, useRef } from "preact/hooks";
+import { useRef, useState } from "preact/hooks";
+import Dropdown from "./Dropdown.tsx";
 import IconQrcode from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/qrcode.tsx";
 import IconCopy from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/copy.tsx";
-import IconArchive from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/archive.tsx";
 import IconDeviceFloppy from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/device-floppy.tsx";
 import IconEdit from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/edit.tsx";
-import IconTrash from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/trash.tsx";
 import IconTrashX from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/trash-x.tsx";
 import IconX from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/x.tsx";
 
@@ -15,35 +14,32 @@ interface UrlItemProps {
   index: number;
   updateUrl: (id: string, newShortUrl: string) => void;
   archiveUrl: (id: string) => void;
-  selected: boolean;
-  toggleSelect: (id: string, index: number, event: Event) => void; // Updated type
   generateQrCode: (id: string) => void;
   qrCodeUrl: string | null;
 }
+
 function sanitizeInput(input: string): string {
-    return input.replace(/[^a-zA-Z0-9-_]/g, "");
-  }
+  return input.replace(/[^a-zA-Z0-9-_]/g, "");
+}
+
 function UrlItem({
   url,
   data,
   updateUrl,
   archiveUrl,
-  selected,
-  toggleSelect,
   generateQrCode,
   qrCodeUrl,
-  index, // Add index prop
+  index,
 }: UrlItemProps) {
   const [editing, setEditing] = useState(false);
-  const [newShortUrlEnding, setNewShortUrlEnding] = useState(url.shortUrl.split("/").pop() || "");
+  const [newShortUrlEnding, setNewShortUrlEnding] = useState(
+    url.shortUrl.split("/").pop() || "",
+  );
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
   const [copyColor, setCopyColor] = useState("text-blue-400");
   const inputRef = useRef<HTMLInputElement>(null);
 
-
-
-  
   const handleEdit = () => {
     setEditing(true);
     setTimeout(() => inputRef.current?.focus(), 0);
@@ -57,25 +53,28 @@ function UrlItem({
 
   const handleSave = () => {
     const sanitizedEnding = sanitizeInput(newShortUrlEnding);
-  
+
     if (sanitizedEnding.length < 4) {
       setError("Too short. Minimum 4 characters.");
       return;
     }
-  
+
     const baseUrl = url.shortUrl.split("/").slice(0, -1).join("/");
     const newShortUrl = `${baseUrl}/${sanitizedEnding}`;
-  
-    if (data.some((entry) => entry.shortUrl === newShortUrl && entry.id !== url.id)) {
+
+    if (
+      data.some((entry) =>
+        entry.shortUrl === newShortUrl && entry.id !== url.id
+      )
+    ) {
       setError("That one is already taken!");
       return;
     }
-  
+
     updateUrl(url.id, newShortUrl);
     setEditing(false);
     setError("");
   };
-  
 
   const handleCancel = () => {
     setNewShortUrlEnding(url.shortUrl.split("/").pop() || "");
@@ -91,8 +90,6 @@ function UrlItem({
     generateQrCode(url.id);
   };
 
-
-  
   const handleCopy = () => {
     navigator.clipboard.writeText(url.shortUrl).then(() => {
       setCopied(true);
@@ -103,10 +100,6 @@ function UrlItem({
       }, 2000); // Keep the green color for 2 seconds
     });
   };
-  
-  
-  
-  
 
   const getShortenedUrl = (url: string) => {
     if (url.length > 40) {
@@ -116,39 +109,34 @@ function UrlItem({
   };
 
   return (
-    <div
-      class={`flex flex-col sm:flex-row p-4 gap-4 border-b border-gray-700 items-center ${
-        qrCodeUrl === url.shortUrl ? "bg-gray-600" : "bg-gray-800"
-      }`}
-    >
-      <input
-        type="checkbox"
-        checked={selected}
-        onChange={(e) => toggleSelect(url.id, index, e as unknown as Event)} // Cast event to unknown first
-        class="mr-2"
-      />
-      <div class="flex w-full gap-2">
-        <div class="flex flex-col font-mono">
-          {!editing && (
+   <div
+    class={`flex flex-col sm:flex-row p-2 sm:p-4 gap-2 sm:gap-4 border-b border-gray-700 items-center ${
+      qrCodeUrl === url.shortUrl ? "bg-gray-600" : "bg-gray-800"
+    }`}
+  >
+    <div class="flex flex-row sm:flex-row w-full gap-2 tems-center justify-between">
+    <div class="flex flex-col font-mono text-xs sm:text-sm  items-start">
+        {!editing && (
             <div class="flex items-center">
               <a
                 href={url.shortUrl}
-                class="text-blue-400 hover:text-blue-300 hover:underline"
+                class="text-blue-400 hover:text-blue-300 text-xl hover:underline"
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 {getShortenedUrl(url.shortUrl)}
               </a>
               <button
-  class={`ml-2 rounded flex items-center ${copied ? 'text-green-400' : 'text-blue-400 hover:text-blue-300'} transition-colors duration-2000`}
-  onClick={handleCopy}
-  title="Copy"
->
-  <IconCopy />
-</button>
-
-
-
+                class={`ml-2 rounded flex items-center ${
+                  copied
+                    ? "text-green-400"
+                    : "text-blue-400 hover:text-blue-300"
+                } transition-colors duration-2000`}
+                onClick={handleCopy}
+                title="Copy"
+              >
+                <IconCopy />
+              </button>
               {copied && (
                 <div class="text-xs ml-2 text-green-400">
                   Copied to clipboard!
@@ -166,12 +154,12 @@ function UrlItem({
               ? url.originalUrl.slice(0, 40) + "..."
               : url.originalUrl}
           </a>
-          <div class="text-xs text-gray-500">Created at: {url.timestamp}</div>
+          <div class="text-xxs text-gray-500">Created at: {url.timestamp}</div>
           {editing && (
             <>
               <span class="text-gray-400">{url.shortUrl.split("/").slice(0, -1).join("/")}/</span>
               <input
-                class={`border rounded w-full py-2 px-3 mr-4 bg-gray-700 text-white ${
+                class={`border rounded w-full py-1 px-2 mr-4 bg-gray-700 text-white ${
                   error ? "border-red-600" : ""
                 }`}
                 value={newShortUrlEnding}
@@ -185,52 +173,61 @@ function UrlItem({
             </>
           )}
         </div>
-      </div>
-
-      <div class="flex p-4 gap-2 items-center sm:flex-end">
-        {!editing && (
-          <button
-            class="p-2 ml-2 text-gray-400 hover:bg-gray-700 hover:text-white rounded flex items-center"
-            onClick={handleEdit}
-            title="Edit"
-          >
-            <IconEdit />
-          </button>
-        )}
-        {editing && (
-          <>
+        <div class="flex gap-2 items-center justify-end  mt-2 sm:mt-0">
+          {/* Desktop Buttons */}
+          <div class="hidden sm:flex gap-2">
+            {!editing && (
+              <button
+                class="p-1 sm:p-2 text-gray-400 hover:bg-gray-700 hover:text-white rounded flex items-center"
+                onClick={handleEdit}
+                title="Edit"
+              >
+                <IconEdit />
+              </button>
+            )}
+            {editing && (
+              <>
+                <button
+                  class="p-1 sm:p-2 text-blue-400 rounded flex items-center hover:bg-gray-700"
+                  onClick={handleSave}
+                  title="Save"
+                >
+                  <IconDeviceFloppy />
+                </button>
+                <button
+                  class="p-1 sm:p-2 text-red-500 rounded flex items-center hover:bg-gray-700"
+                  onClick={handleCancel}
+                  title="Cancel"
+                >
+                  <IconX />
+                </button>
+              </>
+            )}
             <button
-              class="p-2 mr-2 text-blue-400 rounded flex items-center hover:bg-gray-700"
-              onClick={handleSave}
-              title="Save"
+              class="p-1 sm:p-2 text-gray-400 hover:bg-gray-700 hover:text-white rounded flex items-center"
+              onClick={handleGenerateQrCode}
+              title="Generate QR Code"
             >
-              <IconDeviceFloppy />
+              <IconQrcode />
             </button>
-
             <button
-              class="p-2 mr-2 text-red-500 rounded flex items-center hover:bg-gray-700"
-              onClick={handleCancel}
-              title="Cancel"
+              class="p-1 sm:p-2 text-gray-400 hover:bg-gray-700 hover:text-white rounded flex items-center"
+              onClick={handleArchive}
+              title="Archive"
             >
-              <IconX />
+              <IconTrashX />
             </button>
-          </>
-        )}
-        <button
-          class="p-2 ml-2 text-gray-400 hover:bg-gray-700 hover:text-white rounded flex items-center"
-          onClick={handleGenerateQrCode}
-          title="Generate QR Code"
-        >
-          <IconQrcode />
-        </button>
+          </div>
 
-        <button
-          class="p-2 ml-2 text-gray-400 hover:bg-gray-700 hover:text-white rounded flex items-center"
-          onClick={handleArchive}
-          title="Archive"
-        >
-          <IconTrashX />
-        </button>
+          {/* Mobile Dropdown */}
+          <div class="sm:hidden">
+            <Dropdown
+              onEdit={handleEdit}
+              onGenerateQrCode={handleGenerateQrCode}
+              onArchive={handleArchive}
+            />
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -240,33 +237,27 @@ export default function UrlList({
   data,
   updateUrl,
   archiveUrl,
-  selected,
-  toggleSelect,
   generateQrCode,
   qrCodeUrl,
 }: {
   data: UrlEntry[];
   updateUrl: (id: string, newShortUrl: string) => void;
   archiveUrl: (id: string) => void;
-  selected: Set<string>;
-  toggleSelect: (id: string, index: number, event: Event) => void; // Updated type
   generateQrCode: (id: string) => void;
   qrCodeUrl: string | null;
 }) {
   return (
     <div>
-      {data.map((url, index) => ( // Add index here
+      {data.map((url, index) => (
         <UrlItem
           key={url.id}
           url={url}
           data={data}
           updateUrl={updateUrl}
           archiveUrl={archiveUrl}
-          selected={selected.has(url.id)}
-          toggleSelect={toggleSelect}
           generateQrCode={generateQrCode}
           qrCodeUrl={qrCodeUrl}
-          index={index} // Pass index as prop
+          index={index}
         />
       ))}
     </div>

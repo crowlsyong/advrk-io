@@ -17,18 +17,19 @@ export default function TopBar() {
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
   const [activePath, setActivePath] = useState<string>("");
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const [userType, setUserType] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setActivePath(window.location.pathname);
     const cookies = document.cookie.split(";").reduce((acc, cookie) => {
-      const [name, value] = cookie.split("=").map(c => c.trim());
+      const [name, value] = cookie.split("=").map((c) => c.trim());
       acc[name] = value;
       return acc;
     }, {} as Record<string, string>);
     setIsLoggedIn(Boolean(cookies.auth)); // Check if the auth cookie exists
+    setUserType(cookies.userType || null); // Set the user type from the cookie
   }, []);
-  
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
@@ -62,68 +63,75 @@ export default function TopBar() {
       activePath === path ? "text-white" : "text-gray-300"
     } hover:bg-gray-700`;
 
-  return (
-    <nav class="bg-gray-900 border-b border-gray-700 shadow-sm top-0 w-full z-50" ref={menuRef}>
-      <div class="w-full px-2 sm:px-6 lg:px-8">
-  <div class="relative flex items-center justify-between h-16">
-    <div class="absolute inset-y-0 left-0 flex items-center">
-      <button
-        onClick={toggleMenu}
-        class="inline-flex items-center justify-center p-2 rounded-md text-gray-300 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
+  return isLoggedIn
+    ? (
+      <nav
+        class="bg-gray-900 border-b border-gray-700 shadow-sm top-0 w-full z-50"
+        ref={menuRef}
       >
-        <IconMenu2 class="h-6 w-6" aria-hidden="true" />
-      </button>
-      <a href="/" class="ml-1 text-2xl font-semibold text-white">🧗 advrk.io</a>
-    </div>
-  </div>
-</div>
+        <div class="w-full px-2 sm:px-6 lg:px-8">
+          <div class="relative flex items-center justify-between h-16">
+            <div class="absolute inset-y-0 left-0 flex items-center">
+              <button
+                onClick={toggleMenu}
+                class="inline-flex items-center justify-center p-2 rounded-md text-gray-300 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
+              >
+                <IconMenu2 class="h-6 w-6" aria-hidden="true" />
+              </button>
+              <a
+                href="/"
+                class="ml-1 text-md font-semibold text-white sm:text-2xl"
+              >
+                🧗 advrk.io
+              </a>
+            </div>
+          </div>
+        </div>
 
-
-      <div
-        class={`absolute inset-0 bg-gray-900 z-50 transition-transform transform top-0 left-0 bottom-0 w-64 shadow-lg space-y-1 p-4 ${
-          isOpen ? "translate-x-0" : "-translate-x-full"
-        } lg:p-4`}
-      >
-        <div class="px-2 pb-3 space-y-1 flex flex-col">
-          <button
-            onClick={toggleMenu}
-            class="inline-flex items-center justify-center p-2 rounded-md text-white bg-gray-700 hover:text-white hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white w-full lg:w-auto"
-          >
-            <IconArrowBigLeft class="h-6 w-6" aria-hidden="true" />
-          </button>
-          <a href="/" class={getLinkClass("/")}>
-            <IconHome class="h-6 w-6 mr-1" />
-            Home
-          </a>
-          {isLoggedIn && (
-            <>
-              <div class="relative">
-                <button
-                  onClick={toggleUrlDropdown}
-                  class="flex items-center w-full px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:bg-gray-700 focus:outline-none"
-                >
-                  <IconTextScan2 class="h-6 w-6 mr-1" />
-                  URL Shortener
-                  <IconChevronDown
-                    class={`h-5 w-5 ml-auto transition-transform ${
-                      isUrlDropdownOpen ? "rotate-180" : "rotate-0"
-                    }`}
-                  />
-                </button>
-                {isUrlDropdownOpen && (
-                  <div class="ml-8 mt-1 space-y-1">
-                    <a href="/s/" class={getLinkClass("/s/")}>
-                      App
-                    </a>
-                    <a href="/s/archive" class={getLinkClass("/s/archive")}>
-                      Archive
-                    </a>
-                    <a href="/s/data" class={getLinkClass("/s/data")}>
-                      Database
-                    </a>
-                  </div>
-                )}
-              </div>
+        <div
+          class={`absolute inset-0 bg-gray-900 z-50 transition-transform transform top-0 left-0 bottom-0 w-64 shadow-lg space-y-1 p-4 ${
+            isOpen ? "translate-x-0" : "-translate-x-full"
+          } lg:p-4`}
+        >
+          <div class="px-2 pb-3 space-y-1 flex flex-col">
+            <button
+              onClick={toggleMenu}
+              class="inline-flex items-center justify-center p-2 rounded-md text-white bg-gray-700 hover:text-white hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white w-full lg:w-auto"
+            >
+              <IconArrowBigLeft class="h-6 w-6" aria-hidden="true" />
+            </button>
+            <a href="/" class={getLinkClass("/")}>
+              <IconHome class="h-6 w-6 mr-1" />
+              Home
+            </a>
+            <div class="relative">
+              <button
+                onClick={toggleUrlDropdown}
+                class="flex items-center w-full px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:bg-gray-700 focus:outline-none"
+              >
+                <IconTextScan2 class="h-6 w-6 mr-1" />
+                URL Shortener
+                <IconChevronDown
+                  class={`h-5 w-5 ml-auto transition-transform ${
+                    isUrlDropdownOpen ? "rotate-180" : "rotate-0"
+                  }`}
+                />
+              </button>
+              {isUrlDropdownOpen && (
+                <div class="ml-8 mt-1 space-y-1">
+                  <a href="/s/" class={getLinkClass("/s/")}>
+                    App
+                  </a>
+                  <a href="/s/archive" class={getLinkClass("/s/archive")}>
+                    Archive
+                  </a>
+                  <a href="/s/data" class={getLinkClass("/s/data")}>
+                    Database
+                  </a>
+                </div>
+              )}
+            </div>
+            {(userType === "admin" || userType === "sudo") && (
               <div class="relative">
                 <button
                   onClick={toggleUserDropdown}
@@ -148,21 +156,15 @@ export default function TopBar() {
                   </div>
                 )}
               </div>
-            </>
-          )}
-          {isLoggedIn ? (
+            )}
+
             <a href="/logout" class={getLinkClass("/logout")}>
               <IconLogout class="h-6 w-6 mr-1" />
               Log Out
             </a>
-          ) : (
-            <a href="/login" class={getLinkClass("/login")}>
-              <IconLogin class="h-6 w-6 mr-1" />
-              Log In
-            </a>
-          )}
+          </div>
         </div>
-      </div>
-    </nav>
-  );
+      </nav>
+    )
+    : null;
 }

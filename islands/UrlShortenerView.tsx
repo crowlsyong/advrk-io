@@ -24,8 +24,6 @@ export default function UrlShortenerView(
   const [data, setData] = useState(props.initialData);
   const [filteredData, setFilteredData] = useState(props.initialData);
   const [adding, setAdding] = useState(false);
-  const [selected, setSelected] = useState<Set<string>>(new Set());
-  const [lastSelectedIndex, setLastSelectedIndex] = useState<number | null>(null);
   const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
   const urlInput = useRef<HTMLInputElement>(null);
 
@@ -42,37 +40,13 @@ export default function UrlShortenerView(
     );
   }, [props.initialData]);
 
-  const toggleSelect = (id: string, index: number, event: Event) => {
-    const { shiftKey } = event as KeyboardEvent;
-    setSelected((prevSelected) => {
-      const newSelected = new Set(prevSelected);
-      if (shiftKey && lastSelectedIndex !== null) {
-        const start = Math.min(lastSelectedIndex, index);
-        const end = Math.max(lastSelectedIndex, index);
-        for (let i = start; i <= end; i++) {
-          newSelected.add(data[i].id);
-        }
-      } else {
-        if (newSelected.has(id)) {
-          newSelected.delete(id);
-        } else {
-          newSelected.add(id);
-        }
-        setLastSelectedIndex(index);
-      }
-      return newSelected;
-    });
-  };
-
-  const anySelected = selected.size > 0;
-
   const addUrl = useCallback(async () => {
     let value = urlInput.current!.value.toLowerCase();
     if (!value) return;
     value = ensureProtocol(value);
     urlInput.current!.value = "";
     setAdding(true);
-  
+
     try {
       const response = await axios.post(window.location.href, { url: value });
       if (response.status === 201) {
@@ -88,7 +62,6 @@ export default function UrlShortenerView(
       setAdding(false);
     }
   }, []);
-  
 
   const updateUrl = useCallback(async (id: string, newShortUrl: string) => {
     setAdding(true);
@@ -132,33 +105,6 @@ export default function UrlShortenerView(
     }
   }, [data]);
 
-  const archiveSelected = useCallback(async () => {
-    const confirmed = confirm(
-      "Are you sure you want to archive the selected items?",
-    );
-    if (!confirmed) return;
-
-    try {
-      const remainingUrls = data.filter((url) => !selected.has(url.id));
-      setData(
-        [...remainingUrls].sort((a, b) =>
-          new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
-        ),
-      );
-      setFilteredData(
-        [...remainingUrls].sort((a, b) =>
-          new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
-        ),
-      );
-      for (const id of selected) {
-        await axios.delete(window.location.href, { data: { id } });
-      }
-      setSelected(new Set());
-    } catch (error) {
-      console.error("Failed to archive the URLs:", error);
-    }
-  }, [selected, data]);
-
   const generateQrCode = useCallback((id: string) => {
     const url = data.find((entry) => entry.id === id)?.shortUrl;
     if (url) {
@@ -179,14 +125,13 @@ export default function UrlShortenerView(
     );
     setFilteredData(filtered);
   };
-  
 
   return (
-    <div class="flex gap-2 w-full items-center justify-center py-8 px-4 sm:px-6 lg:px-8 dark:bg-gray-900">
-      <div class="w-full max-w-4xl mx-auto sm:px-6 lg:px-8 bg-gray-800 border border-gray-700 rounded p-4">
+    <div class="flex gap-2 w-full items-center justify-center py-0 px-0 sm:px-8 sm:py-8 dark:bg-gray-900">
+      <div class="w-full max-w-4xl mx-auto  bg-gray-800 border border-gray-700 rounded p-4">
         <div class="flex flex-col pb-4">
           <div class="flex flex-row gap-2 items-center">
-            <h1 class="font-bold text-xl m-4 text-white">🤏 URL Shortener</h1>
+            <h1 class="font-bold text-3xl sm:text-xl m-4 text-white">🤏 URL Shortener</h1>
             <a
               href="/s/archive"
               class="px-1 py-1 text-gray-400 hover:bg-gray-700 hover:text-white rounded flex gap-1 text-xs ml-auto"
@@ -217,8 +162,6 @@ export default function UrlShortenerView(
           data={filteredData}
           updateUrl={updateUrl}
           archiveUrl={archiveUrl}
-          selected={selected}
-          toggleSelect={toggleSelect}
           generateQrCode={generateQrCode}
           qrCodeUrl={qrCodeUrl}
         />
@@ -228,23 +171,10 @@ export default function UrlShortenerView(
             shortUrl={qrCodeUrl}
             originalUrl={data.find((entry) => entry.shortUrl === qrCodeUrl)
               ?.originalUrl || ""}
-            onClose={() =>
-              setQrCodeUrl(null)}
+            onClose={() => setQrCodeUrl(null)}
           />
         )}
 
-        <div class="flex flex-col py-4 gap-2 sm:items-end">
-          <div class="flex"></div>
-          {anySelected && (
-            <button
-              class="text-sm p-2 rounded text-white bg-red-500 disabled:opacity-50 disabled:bg-gray-500 flex items-center"
-              onClick={archiveSelected}
-            >
-              <IconTrashX class="mr-2" />
-              Archive Selected
-            </button>
-          )}
-        </div>
         <div class="pt-6 opacity-50 text-sm text-gray-400">
           <p>Initial data fetched in {props.latency}ms</p>
           <p class="flex gap-2">

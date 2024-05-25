@@ -8,9 +8,9 @@ interface DataComponentProps {
 
 export default function DataComponent({ urls, archivedUrls }: DataComponentProps) {
   return (
-    <div class="bg-gray-900 flex gap-2 w-full items-center justify-center py-8 px-4 sm:px-6 lg:px-8">
+    <div class="flex gap-2 w-full items-center justify-center py-0 px-0 sm:px-8 sm:py-8 dark:bg-gray-900">
       <div class="w-full max-w-4xl mx-auto sm:px-6 lg:px-8 bg-gray-800 border border-gray-700 rounded p-4">
-        <h1 class="text-xl font-bold text-white mb-4">📊 Database</h1>
+        <h1 class="text-3xl sm:text-xl font-bold text-white mb-4">📊 Database</h1>
         <div>
           <h2 class="text-md font-semibold text-white mt-4">Active URLs</h2>
           <ul>

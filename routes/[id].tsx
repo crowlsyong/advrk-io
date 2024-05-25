@@ -33,7 +33,7 @@ export const handler: Handlers = {
     }
 
     console.log("URL not found or archived.");
-    return new Response("URL not found lol", { status: 404 });
+    return new Response(null, { status: 404 });
   },
 
   async PUT(req, ctx) {

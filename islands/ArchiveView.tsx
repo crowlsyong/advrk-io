@@ -113,11 +113,11 @@ export default function ArchivesView(props: { initialData: UrlEntry[]; latency: 
   };
 
   return (
-    <div class="bg-gray-900 flex gap-2 w-full items-center justify-center py-8 px-4 sm:px-6 lg:px-8">
+    <div class="flex gap-2 w-full items-center justify-center py-0 px-0 sm:px-8 sm:py-8 dark:bg-gray-900">
       <div class="w-full max-w-4xl mx-auto sm:px-6 lg:px-8 bg-gray-800 border border-gray-700 rounded p-4">
         <div class="flex flex-col pb-4">
           <div class="flex flex-row gap-2 items-center">
-            <h1 class="font-bold text-xl m-4 text-white">📁 Archive</h1>
+            <h1 class="font-bold text-3xl sm:text-xl m-4 text-white">📁 Archive</h1>
             <a
               href="/s"
               class="px-1 py-1 text-gray-400 hover:bg-gray-700 hover:text-white rounded flex gap-1 text-xs ml-auto"
@@ -229,11 +229,11 @@ function UrlItem(
       />
       <div class="flex flex-col w-full font-mono">
         <div class="flex items-center">
-          <a href={url.shortUrl} class="text-blue-400 hover:underline">
+          <a href={url.shortUrl} class="text-blue-400 hover:blue-300 hover:underline text-xs sm:text-base">
             {url.shortUrl}
           </a>
           {isDuplicate && (
-            <span class="ml-2 text-red-500">duplicate in production</span>
+            <span class="ml-2 text-red-500 text-xxs sm:text-base">❗️ duplicate in production</span>
           )}
         </div>
         <p class="text-xs opacity-50 leading-loose text-gray-400">{url.originalUrl}</p>

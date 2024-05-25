@@ -1,6 +1,8 @@
+// api/login.ts
 import { Handlers } from "$fresh/server.ts";
 import { setCookie } from "https://deno.land/std@0.203.0/http/cookie.ts";
-import { getUser } from "../../services/database.ts";
+import { getUser, saveSession } from "../../services/database.ts";
+import * as bcrypt from "https://deno.land/x/bcrypt@v0.4.1/mod.ts";
 
 export const handler: Handlers = {
   async POST(req) {
@@ -9,33 +11,64 @@ export const handler: Handlers = {
     const username = form.get("username") as string;
     const password = form.get("password") as string;
 
+    console.log("Login attempt for username:", username);
+
     const user = await getUser(username);
+    console.log("User fetched:", user); // Log the user object
 
-    if (user && user.password === password) {
-      const sessionId = crypto.randomUUID(); // Generate a unique session ID
-      const headers = new Headers();
-      setCookie(headers, {
-        name: "auth",
-        value: sessionId, // Use the unique session ID
-        maxAge: 1200,
-        sameSite: "Lax", // This is important to prevent CSRF attacks
-        domain: url.hostname,
-        path: "/",
-        secure: true,
-      });
+    if (user) {
+      const passwordMatch = await bcrypt.compare(password, user.password);
+      console.log("Password match result:", passwordMatch); // Log password match result
 
-      headers.set("location", "/");
-      return new Response(null, {
-        status: 303, // "See Other"
-        headers,
-      });
+      if (passwordMatch) {
+        console.log(`User logged in with userType: ${user.userType}`); // Log the user type
+
+        const sessionId = crypto.randomUUID(); // Generate a unique session ID
+        const headers = new Headers();
+        setCookie(headers, {
+          name: "auth",
+          value: sessionId, // Use the unique session ID
+          maxAge: 1200,
+          sameSite: "Lax", // This is important to prevent CSRF attacks
+          domain: url.hostname,
+          path: "/",
+          secure: true,
+        });
+
+        if (user.userType) {
+          setCookie(headers, {
+            name: "userType",
+            value: user.userType, // Ensure userType is not undefined
+            maxAge: 1200,
+            sameSite: "Lax",
+            domain: url.hostname,
+            path: "/",
+            secure: true,
+          });
+        } else {
+          console.error("UserType is undefined for user:", username);
+        }
+
+        // Save session with user ID and session ID
+        await saveSession(user.id, sessionId);
+
+        headers.set("location", "/");
+        return new Response(null, {
+          status: 303, // "See Other"
+          headers,
+        });
+      } else {
+        console.error("Password does not match for user:", username);
+      }
     } else {
-      const headers = new Headers({ "Content-Type": "application/json" });
-      headers.set("location", "/login?error=Invalid%20username%20or%20password");
-      return new Response(null, {
-        status: 303,
-        headers,
-      });
+      console.error("User not found:", username);
     }
+
+    const headers = new Headers({ "Content-Type": "application/json" });
+    headers.set("location", "/login?error=Invalid%20username%20or%20password");
+    return new Response(null, {
+      status: 303,
+      headers,
+    });
   },
 };

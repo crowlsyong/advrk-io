@@ -1,0 +1,5 @@
+deno run --allow-read --allow-net database.ts
+
+rm fresh.gen.ts
+
+rm lock......something
