@@ -13,7 +13,9 @@ interface UrlEntry {
   shortUrl: string;
 }
 
-export default function ArchivesView(props: { initialData: UrlEntry[]; latency: number }) {
+export default function ArchivesView(
+  props: { initialData: UrlEntry[]; latency: number },
+) {
   const [data, setData] = useState(props.initialData);
   const [filteredData, setFilteredData] = useState(props.initialData);
   const [selected, setSelected] = useState<Set<string>>(new Set());
@@ -23,7 +25,9 @@ export default function ArchivesView(props: { initialData: UrlEntry[]; latency: 
   useEffect(() => {
     const checkForDuplicates = async () => {
       try {
-        const response = await axios.post('/api/check-duplicates', { shortUrls: data.map(url => url.shortUrl) });
+        const response = await axios.post("/api/check-duplicates", {
+          shortUrls: data.map((url) => url.shortUrl),
+        });
         console.log("Duplicate check response:", response.data);
         if (response.data.duplicates) {
           setDuplicateUrls(new Set(response.data.duplicates));
@@ -34,6 +38,8 @@ export default function ArchivesView(props: { initialData: UrlEntry[]; latency: 
     };
     checkForDuplicates();
   }, [data]);
+
+  const [duplicatesSelected, setDuplicatesSelected] = useState(false);
 
   const toggleSelect = (id: string, index: number, event: MouseEvent) => {
     setSelected((prevSelected) => {
@@ -55,12 +61,30 @@ export default function ArchivesView(props: { initialData: UrlEntry[]; latency: 
         lastSelectedIndex.current = index;
       }
 
+      const selectedUrls = Array.from(newSelected).map((id) =>
+        data.find((url) => url.id === id)?.shortUrl
+      );
+      const hasDuplicates = new Set(selectedUrls).size !== selectedUrls.length;
+
+      const archiveDuplicates = Array.from(newSelected).some((id) => {
+        const url = data.find((url) => url.id === id);
+        return url && duplicateUrls.has(url.shortUrl);
+      });
+
+      const pageDuplicates = new Set(
+        selectedUrls.filter((item, index) => selectedUrls.indexOf(item) !== index)
+      ).size > 0;
+
+      setDuplicatesSelected(hasDuplicates || archiveDuplicates || pageDuplicates);
+
       return newSelected;
     });
   };
 
   const deleteSelected = useCallback(async () => {
-    const confirmed = confirm("Are you sure you want to delete the selected items?");
+    const confirmed = confirm(
+      "Are you sure you want to delete the selected items?",
+    );
     if (!confirmed) return;
 
     try {
@@ -68,7 +92,9 @@ export default function ArchivesView(props: { initialData: UrlEntry[]; latency: 
         await axios.delete(window.location.href, { data: { id } });
       }
       setData((prevData) => prevData.filter((url) => !selected.has(url.id)));
-      setFilteredData((prevData) => prevData.filter((url) => !selected.has(url.id)));
+      setFilteredData((prevData) =>
+        prevData.filter((url) => !selected.has(url.id))
+      );
       setSelected(new Set());
     } catch (error) {
       console.error("Failed to delete the URLs:", error);
@@ -76,7 +102,9 @@ export default function ArchivesView(props: { initialData: UrlEntry[]; latency: 
   }, [selected]);
 
   const restoreSelected = useCallback(async () => {
-    const confirmed = confirm("Are you sure you want to restore the selected items?");
+    const confirmed = confirm(
+      "Are you sure you want to restore the selected items?",
+    );
     if (!confirmed) return;
 
     try {
@@ -84,7 +112,9 @@ export default function ArchivesView(props: { initialData: UrlEntry[]; latency: 
         await axios.put(window.location.href, { id });
       }
       setData((prevData) => prevData.filter((url) => !selected.has(url.id)));
-      setFilteredData((prevData) => prevData.filter((url) => !selected.has(url.id)));
+      setFilteredData((prevData) =>
+        prevData.filter((url) => !selected.has(url.id))
+      );
       setSelected(new Set());
     } catch (error) {
       console.error("Failed to restore the URLs:", error);
@@ -100,13 +130,13 @@ export default function ArchivesView(props: { initialData: UrlEntry[]; latency: 
     setSelected(new Set());
   };
 
-  const hasDuplicateSelected = Array.from(selected).some(id => {
-    const url = data.find(url => url.id === id);
+  const hasDuplicateSelected = Array.from(selected).some((id) => {
+    const url = data.find((url) => url.id === id);
     return url && duplicateUrls.has(url.shortUrl);
   });
 
   const handleSearch = (query: string) => {
-    const filtered = data.filter(url =>
+    const filtered = data.filter((url) =>
       url.originalUrl.includes(query) || url.shortUrl.includes(query)
     );
     setFilteredData(filtered);
@@ -117,7 +147,9 @@ export default function ArchivesView(props: { initialData: UrlEntry[]; latency: 
       <div class="w-full max-w-4xl mx-auto sm:px-6 lg:px-8 bg-gray-800 border border-gray-700 rounded p-4">
         <div class="flex flex-col pb-4">
           <div class="flex flex-row gap-2 items-center">
-            <h1 class="font-bold text-3xl sm:text-xl m-4 text-white">📁 Archive</h1>
+            <h1 class="font-bold text-3xl sm:text-xl m-4 text-white">
+              📁 Archive
+            </h1>
             <a
               href="/s"
               class="px-1 py-1 text-gray-400 hover:bg-gray-700 hover:text-white rounded flex gap-1 text-xs ml-auto"
@@ -126,9 +158,9 @@ export default function ArchivesView(props: { initialData: UrlEntry[]; latency: 
               Go to URL Shortener
             </a>
           </div>
-          
+
           <Search
-            searchUrl={async () => {}}  // Update this if you have a specific search function
+            searchUrl={async () => {}} // Update this if you have a specific search function
             searching={false}
             onSearch={handleSearch}
           />
@@ -170,16 +202,21 @@ export default function ArchivesView(props: { initialData: UrlEntry[]; latency: 
                 </button>
                 <button
                   type="button"
-                  class={`px-1 py-1 rounded flex gap-1 text-xs ${hasDuplicateSelected ? 'bg-gray-500 text-gray-300' : 'bg-blue-600 text-white'}`}
-                  onClick={hasDuplicateSelected ? deselectAll : restoreSelected}
-                  disabled={hasDuplicateSelected}
+                  class={`px-1 py-1 rounded flex gap-1 text-xs ${
+                    duplicatesSelected
+                      ? "bg-gray-500 text-gray-300"
+                      : "bg-blue-600 text-white"
+                  }`}
+                  onClick={duplicatesSelected ? deselectAll : restoreSelected}
+                  disabled={duplicatesSelected}
                 >
                   <IconRestore class="w-4 h-4" />
-                  {hasDuplicateSelected ? 'Deselect Duplicate' : 'Restore Selected'}
+                  {duplicatesSelected
+                    ? "Deselect Duplicate"
+                    : "Restore Selected"}
                 </button>
               </div>
             )}
-
           </div>
         </div>
         <div>
@@ -189,7 +226,8 @@ export default function ArchivesView(props: { initialData: UrlEntry[]; latency: 
               url={url}
               selected={selected.has(url.id)}
               isDuplicate={duplicateUrls.has(url.shortUrl)}
-              toggleSelect={(event: MouseEvent) => toggleSelect(url.id, index, event)}
+              toggleSelect={(event: MouseEvent) =>
+                toggleSelect(url.id, index, event)}
             />
           ))}
         </div>
@@ -220,7 +258,11 @@ function UrlItem(
   };
 
   return (
-    <div class={`flex my-2 border-b border-gray-700 items-center h-16 gap-2 ${isDuplicate ? 'text-red-500' : 'text-white'}`}>
+    <div
+      class={`flex my-2 border-b border-gray-700 items-center h-16 gap-2 ${
+        isDuplicate ? "text-red-500" : "text-white"
+      }`}
+    >
       <input
         type="checkbox"
         checked={selected}
@@ -229,14 +271,21 @@ function UrlItem(
       />
       <div class="flex flex-col w-full font-mono">
         <div class="flex items-center">
-          <a href={url.shortUrl} class="text-blue-400 hover:blue-300 hover:underline text-xs sm:text-base">
+          <a
+            href={url.shortUrl}
+            class="text-blue-400 hover:blue-300 hover:underline text-xs sm:text-base"
+          >
             {url.shortUrl}
           </a>
           {isDuplicate && (
-            <span class="ml-2 text-red-500 text-xxs sm:text-base">❗️ duplicate in production</span>
+            <span class="ml-2 text-red-500 text-xxs sm:text-base">
+              ❗️ duplicate in production
+            </span>
           )}
         </div>
-        <p class="text-xs opacity-50 leading-loose text-gray-400">{url.originalUrl}</p>
+        <p class="text-xs opacity-50 leading-loose text-gray-400">
+          {url.originalUrl}
+        </p>
       </div>
     </div>
   );

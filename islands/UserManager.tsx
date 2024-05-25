@@ -112,8 +112,15 @@ export default function UserManager() {
   }
 
   function startEditing(user: User) {
-    setEditUserId(user.id);
-    setFormData({ username: user.username, password: "", userType: user.userType });
+    if (editUserId === user.id) {
+      // If already editing, cancel edit mode
+      setEditUserId(null);
+      setFormData({ username: "", password: "", userType: "user" });
+    } else {
+      // Start editing the user
+      setEditUserId(user.id);
+      setFormData({ username: user.username, password: "", userType: user.userType });
+    }
   }
 
   return (
@@ -134,7 +141,7 @@ export default function UserManager() {
           <div>
             <input
               type="password"
-              placeholder="Password"
+              placeholder={editUserId ? "New Password" : "Password"}
               value={formData.password}
               onInput={(e) => setFormData({ ...formData, password: (e.target as HTMLInputElement).value })}
               class="w-full px-3 py-2 bg-gray-700 text-white rounded-md focus:ring focus:ring-blue-500"
@@ -153,11 +160,12 @@ export default function UserManager() {
             </select>
           </div>
           <button
-            onClick={() => (editUserId ? handleUpdate(editUserId) : handleCreate())}
-            class="w-full px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-300"
-          >
-            {editUserId ? "Update User" : "Create User"}
-          </button>
+  onClick={() => (editUserId ? handleUpdate(editUserId) : handleCreate())}
+  class={`w-full px-4 py-2 ${editUserId ? 'bg-indigo-500 hover:bg-indigo-600' : 'bg-blue-500 hover:bg-blue-600'} text-white rounded-md transition duration-300`}
+>
+  {editUserId ? "Update User" : "Create User"}
+</button>
+
         </form>
         {message && (
           <p class={`mb-4 p-2 text-center ${isError ? "text-red-500" : "text-green-500"}`}>
@@ -171,9 +179,9 @@ export default function UserManager() {
               <div class="space-x-2">
                 <button
                   onClick={() => startEditing(user)}
-                  class="px-3 py-1 bg-yellow-500 text-white rounded-md hover:bg-yellow-600 transition duration-300"
+                  class={`px-3 py-1 ${editUserId === user.id ? 'bg-red-500' : 'bg-yellow-500'} text-white rounded-md hover:${editUserId === user.id ? 'bg-red-600' : 'bg-yellow-600'} transition duration-300`}
                 >
-                  Edit
+                  {editUserId === user.id ? 'Cancel' : 'Edit'}
                 </button>
                 <button
                   onClick={() => handleDelete(user.id)}
