@@ -16,7 +16,7 @@ export const handler: Handlers<Data> = {
   },
 };
 
-export default function App({ Component, data }: PageProps<Data>) {
+export default function App({ Component }: PageProps<Data>) {
   return (
     <html>
       <head>
