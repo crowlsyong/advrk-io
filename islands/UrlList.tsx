@@ -28,8 +28,8 @@ function UrlItem({
   updateUrl,
   archiveUrl,
   generateQrCode,
-  qrCodeUrl,
-  index,
+  qrCodeUrl
+
 }: UrlItemProps) {
   const [editing, setEditing] = useState(false);
   const [newShortUrlEnding, setNewShortUrlEnding] = useState(
@@ -37,7 +37,7 @@ function UrlItem({
   );
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
-  const [copyColor, setCopyColor] = useState("text-blue-400");
+  const [_copyColor, setCopyColor] = useState("text-blue-400");
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleEdit = () => {
