@@ -113,7 +113,7 @@ const QrCodeGenerator = (
               </button>
               <button
                 onClick={handleDownloadBase64Image}
-                className="text-sm p-2 text-gray-600 bg-blue-600 text-white hover:bg-blue-500 hover:text-white rounded flex items-center justify-center w-full"
+                className="text-sm p-2 text-gray-300 bg-blue-600 hover:bg-blue-500 hover:text-white rounded flex items-center justify-center w-full"
               >
                 <IconDownload className="mr-1" /> Download
               </button>

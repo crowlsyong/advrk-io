@@ -1,4 +1,4 @@
-deno run --allow-read --allow-net database.ts
+deno run --unstable-kv --allow-read --allow-net database.ts
 
 rm fresh.gen.ts
 

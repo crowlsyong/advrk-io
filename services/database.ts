@@ -1,6 +1,5 @@
 // services/database.ts
 import { z } from "zod";
-import * as bcrypt from "https://deno.land/x/bcrypt@v0.4.1/mod.ts";
 
 export const kv = await Deno.openKv();
 
@@ -37,6 +36,8 @@ export async function saveSession(
 }
 
 const BASE_URL = Deno.env.get("BASE_URL") || "https://advrk.io";
+// https://advrk.io
+// http://localhost:8000
 
 function generateShortId(length = 4) {
   const characters =
@@ -171,13 +172,28 @@ export async function deleteUrl(id: string): Promise<boolean> {
 }
 
 // User-related functions
+
+// Hash the password using SubtleCrypto API
+export async function hashPassword(password: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(password);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+  return btoa(String.fromCharCode(...new Uint8Array(hashBuffer)));
+}
+
+// Compare the password with the stored hash
+export async function comparePassword(password: string, hash: string): Promise<boolean> {
+  const hashedPassword = await hashPassword(password);
+  return hashedPassword === hash;
+}
+
 export async function createUser(
   username: string,
   password: string,
   userType: "admin" | "sudo" | "user" = "user"
 ): Promise<string> {
   const id = generateShortId(8); // Generate unique ID for the user
-  const hashedPassword = await bcrypt.hash(password); // Hash the password
+  const hashedPassword = await hashPassword(password); // Hash the password
   const userEntry: UserSchema = { id, username, password: hashedPassword, userType };
   await kv.set(["user", id], userEntry);
   return id; // Return the user ID
@@ -202,7 +218,7 @@ export async function validateUser(
 ): Promise<boolean> {
   const user = await getUser(username);
   if (user) {
-    return await bcrypt.compare(password, user.password);
+    return await comparePassword(password, user.password);
   }
   return false;
 }
@@ -221,12 +237,23 @@ if (import.meta.main) {
   await listAllUsers();
 }
 
+// Function to wipe all users
+async function wipeAllUsers() {
+  const it = kv.list({ prefix: ["user"] });
+  for await (const entry of it) {
+    await kv.delete(entry.key);
+  }
+  console.log("All users wiped.");
+}
+
 // Initialize super user "sudo" and clean duplicates
 async function initializeSuperUser() {
+  await wipeAllUsers(); // Wipe all users before initializing the super user
+
   const existingSudoUser = await getUser("sudo");
 
   if (!existingSudoUser) {
-    const hashedPassword = await bcrypt.hash("sudo");
+    const hashedPassword = await hashPassword("sudo");
     console.log("Hashed sudo password:", hashedPassword); // Log the hashed password for verification
     await createUser("sudo", "sudo", "sudo");
     console.log("Super user 'sudo' created.");
@@ -248,5 +275,8 @@ async function initializeSuperUser() {
     }
   }
 }
+
+await initializeSuperUser();
+
 
 await initializeSuperUser();

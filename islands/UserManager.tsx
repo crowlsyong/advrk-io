@@ -1,4 +1,4 @@
-import { useState, useEffect } from "preact/hooks";
+import { useEffect, useState } from "preact/hooks";
 import { JSX } from "preact";
 
 type User = {
@@ -9,7 +9,11 @@ type User = {
 
 export default function UserManager() {
   const [users, setUsers] = useState<User[]>([]);
-  const [formData, setFormData] = useState({ username: "", password: "", userType: "user" });
+  const [formData, setFormData] = useState({
+    username: "",
+    password: "",
+    userType: "user",
+  });
   const [message, setMessage] = useState("");
   const [isError, setIsError] = useState(false);
   const [editUserId, setEditUserId] = useState<string | null>(null);
@@ -42,9 +46,14 @@ export default function UserManager() {
   }
 
   async function handleCreate() {
-    if (!validateUsername(formData.username) || !validatePassword(formData.password)) {
+    if (
+      !validateUsername(formData.username) ||
+      !validatePassword(formData.password)
+    ) {
       setIsError(true);
-      setMessage("Invalid username or password. Username must be at least 4 characters and password must be at least 20 characters.");
+      setMessage(
+        "Invalid username or password. Username must be at least 4 characters and password must be at least 20 characters.",
+      );
       return;
     }
 
@@ -68,9 +77,14 @@ export default function UserManager() {
   }
 
   async function handleUpdate(id: string) {
-    if (!validateUsername(formData.username) || !validatePassword(formData.password)) {
+    if (
+      !validateUsername(formData.username) ||
+      !validatePassword(formData.password)
+    ) {
       setIsError(true);
-      setMessage("Invalid username or password. Username must be at least 10 characters and password must be at least 40 characters.");
+      setMessage(
+        "Invalid username or password. Username must be at least 10 characters and password must be at least 40 characters.",
+      );
       return;
     }
 
@@ -119,7 +133,11 @@ export default function UserManager() {
     } else {
       // Start editing the user
       setEditUserId(user.id);
-      setFormData({ username: user.username, password: "", userType: user.userType });
+      setFormData({
+        username: user.username,
+        password: "",
+        userType: user.userType,
+      });
     }
   }
 
@@ -133,7 +151,11 @@ export default function UserManager() {
               type="text"
               placeholder="Username"
               value={formData.username}
-              onInput={(e) => setFormData({ ...formData, username: (e.target as HTMLInputElement).value })}
+              onInput={(e) =>
+                setFormData({
+                  ...formData,
+                  username: (e.target as HTMLInputElement).value,
+                })}
               class="w-full px-3 py-2 bg-gray-700 text-white rounded-md focus:ring focus:ring-blue-500"
               required
             />
@@ -143,7 +165,11 @@ export default function UserManager() {
               type="password"
               placeholder={editUserId ? "New Password" : "Password"}
               value={formData.password}
-              onInput={(e) => setFormData({ ...formData, password: (e.target as HTMLInputElement).value })}
+              onInput={(e) =>
+                setFormData({
+                  ...formData,
+                  password: (e.target as HTMLInputElement).value,
+                })}
               class="w-full px-3 py-2 bg-gray-700 text-white rounded-md focus:ring focus:ring-blue-500"
               required
             />
@@ -151,7 +177,11 @@ export default function UserManager() {
           <div>
             <select
               value={formData.userType}
-              onChange={(e) => setFormData({ ...formData, userType: (e.target as HTMLSelectElement).value })}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  userType: (e.target as HTMLSelectElement).value,
+                })}
               class="w-full px-3 py-2 bg-gray-700 text-white rounded-md focus:ring focus:ring-blue-500"
             >
               <option value="user">User</option>
@@ -160,28 +190,46 @@ export default function UserManager() {
             </select>
           </div>
           <button
-  onClick={() => (editUserId ? handleUpdate(editUserId) : handleCreate())}
-  class={`w-full px-4 py-2 ${editUserId ? 'bg-indigo-500 hover:bg-indigo-600' : 'bg-blue-500 hover:bg-blue-600'} text-white rounded-md transition duration-300`}
->
-  {editUserId ? "Update User" : "Create User"}
-</button>
-
+            onClick={() => (editUserId
+              ? handleUpdate(editUserId)
+              : handleCreate())}
+            class={`w-full px-4 py-2 ${
+              editUserId
+                ? "bg-indigo-500 hover:bg-indigo-600"
+                : "bg-blue-500 hover:bg-blue-600"
+            } text-white rounded-md transition duration-300`}
+          >
+            {editUserId ? "Update User" : "Create User"}
+          </button>
         </form>
         {message && (
-          <p class={`mb-4 p-2 text-center ${isError ? "text-red-500" : "text-green-500"}`}>
+          <p
+            class={`mb-4 p-2 text-center ${
+              isError ? "text-red-500" : "text-green-500"
+            }`}
+          >
             {message}
           </p>
         )}
         <ul class="space-y-2">
           {users.map((user) => (
-            <li key={user.id} class={`flex items-center justify-between p-4 rounded-md ${user.id === currentUserId ? 'bg-red-500' : 'bg-gray-700'}`}>
+            <li
+              key={user.id}
+              class={`flex items-center justify-between p-4 rounded-md ${
+                user.id === currentUserId ? "bg-red-500" : "bg-gray-700"
+              }`}
+            >
               <span>{user.username} - {user.userType}</span>
               <div class="space-x-2">
                 <button
                   onClick={() => startEditing(user)}
-                  class={`px-3 py-1 ${editUserId === user.id ? 'bg-red-500' : 'bg-yellow-500'} text-white rounded-md hover:${editUserId === user.id ? 'bg-red-600' : 'bg-yellow-600'} transition duration-300`}
+                  class={`px-3 py-1 ${
+                    editUserId === user.id ? "bg-red-500" : "bg-yellow-500"
+                  } text-white rounded-md hover:${
+                    editUserId === user.id ? "bg-red-600" : "bg-yellow-600"
+                  } transition duration-300`}
                 >
-                  {editUserId === user.id ? 'Cancel' : 'Edit'}
+                  {editUserId === user.id ? "Cancel" : "Edit"}
                 </button>
                 <button
                   onClick={() => handleDelete(user.id)}

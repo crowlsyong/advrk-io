@@ -1,7 +1,16 @@
 // api/login.ts
 import { Handlers } from "$fresh/server.ts";
 import { setCookie } from "https://deno.land/std@0.203.0/http/cookie.ts";
-import { getUser, saveSession, comparePassword } from "../../services/database.ts";
+import { getUser, saveSession } from "../../services/database.ts";
+
+// Compare the password with the stored hash
+async function comparePassword(password: string, hash: string): Promise<boolean> {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(password);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+  const hashedPassword = btoa(String.fromCharCode(...new Uint8Array(hashBuffer)));
+  return hashedPassword === hash;
+}
 
 export const handler: Handlers = {
   async POST(req) {

@@ -1,5 +1,8 @@
-// database.ts
+// services/database.ts
+// import * as argon2 from "https://deno.land/x/argon2@v0.9.2/lib/mod.ts";
+
 import { z } from "zod";
+import * as bcrypt from "https://deno.land/x/bcrypt@v0.4.1/mod.ts";
 
 export const kv = await Deno.openKv();
 
@@ -15,8 +18,10 @@ export const userSchema = z.object({
   id: z.string(),
   username: z.string(),
   password: z.string(), // In a real application, you'd store a hashed password
+  userType: z.enum(["admin", "sudo", "user"]), // Add userType field
 });
 export type UserSchema = z.infer<typeof userSchema>;
+
 export const sessionSchema = z.object({
   userId: z.string(),
   sessionId: z.string(),
@@ -33,12 +38,6 @@ export async function saveSession(
   await kv.set(["session", sessionId], sessionEntry);
 }
 
-export async function getSession(
-  sessionId: string,
-): Promise<SessionSchema | undefined> {
-  const entry = await kv.get(["session", sessionId]);
-  return entry.value as SessionSchema | undefined;
-}
 const BASE_URL = Deno.env.get("BASE_URL") || "https://advrk.io";
 
 function generateShortId(length = 4) {
@@ -86,6 +85,7 @@ export async function isDuplicateShortUrl(shortUrl: string): Promise<boolean> {
   }
   return false;
 }
+
 export async function getAllUrls(): Promise<Array<{ id: string } & UrlSchema>> {
   const urls = [];
   const it = kv.list({ prefix: ["url"] });
@@ -176,10 +176,13 @@ export async function deleteUrl(id: string): Promise<boolean> {
 export async function createUser(
   username: string,
   password: string,
-): Promise<void> {
+  userType: "admin" | "sudo" | "user" = "user"
+): Promise<string> {
   const id = generateShortId(8); // Generate unique ID for the user
-  const userEntry: UserSchema = { id, username, password };
+  const hashedPassword = await bcrypt.hash(password); // Hash the password
+  const userEntry: UserSchema = { id, username, password: hashedPassword, userType };
   await kv.set(["user", id], userEntry);
+  return id; // Return the user ID
 }
 
 export async function getUser(
@@ -194,3 +197,58 @@ export async function getUser(
   }
   return undefined;
 }
+
+export async function validateUser(
+  username: string,
+  password: string,
+): Promise<boolean> {
+  const user = await getUser(username);
+  if (user) {
+    return await bcrypt.compare(password, user.password);
+  }
+  return false;
+}
+
+// Function to list all users
+async function listAllUsers() {
+  const it = kv.list({ prefix: ["user"] });
+  for await (const entry of it) {
+    const user = entry.value as UserSchema;
+    console.log(`ID: ${user.id}, Username: ${user.username}, Password: ${user.password}, UserType: ${user.userType}`);
+  }
+}
+
+// Run the function if this script is executed directly
+if (import.meta.main) {
+  await listAllUsers();
+}
+
+// Initialize super user "sudo" and clean duplicates
+async function initializeSuperUser() {
+  const existingSudoUser = await getUser("sudo");
+
+  if (!existingSudoUser) {
+    const hashedPassword = await bcrypt.hash("sudo");
+    console.log("Hashed sudo password:", hashedPassword); // Log the hashed password for verification
+    await createUser("sudo", "sudo", "sudo");
+    console.log("Super user 'sudo' created.");
+  } else {
+    console.log("Super user 'sudo' already exists.");
+  }
+
+  // Clean up duplicate usernames
+  const usersMap: { [username: string]: string } = {};
+  const it = kv.list({ prefix: ["user"] });
+  for await (const entry of it) {
+    const user = entry.value as UserSchema;
+    if (usersMap[user.username]) {
+      // Duplicate username found, delete this entry
+      await kv.delete(["user", user.id]);
+      console.log(`Deleted duplicate user with username: ${user.username}`);
+    } else {
+      usersMap[user.username] = user.id;
+    }
+  }
+}
+
+await initializeSuperUser();
