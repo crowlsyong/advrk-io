@@ -1,4 +1,3 @@
-import { h } from "preact";
 import IconFacebook from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/brand-facebook.tsx";
 import IconTwitter from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/brand-twitter.tsx";
 import IconInstagram from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/brand-instagram.tsx";

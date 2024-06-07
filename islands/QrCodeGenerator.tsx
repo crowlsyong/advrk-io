@@ -1,4 +1,3 @@
-import { h } from "preact";
 import { useEffect, useRef, useState } from "preact/hooks";
 import { qrcode } from "https://deno.land/x/qrcode@v2.0.0/mod.ts";
 import IconDownload from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/download.tsx";

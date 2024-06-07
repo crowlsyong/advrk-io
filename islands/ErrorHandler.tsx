@@ -1,5 +1,4 @@
 // /islands/ErrorHandler.tsx
-import { h } from "preact";
 import { useState, useEffect } from "preact/hooks";
 import Notification from "./Notification.tsx"; // Import the Notification component
 

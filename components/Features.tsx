@@ -1,4 +1,3 @@
-import { h } from "preact";
 import IconCloudHeart from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/cloud-heart.tsx";
 import IconLock from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/lock.tsx";
 import IconDatabase from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/database.tsx";

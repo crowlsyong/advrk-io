@@ -1,4 +1,4 @@
-import { useState, useRef } from "preact/hooks";
+import { useRef } from "preact/hooks";
 
 interface SearchProps {
   searchUrl: (query: string) => Promise<void>;

@@ -1,4 +1,3 @@
-import { h } from "preact";
 import { useEffect } from "preact/hooks";
 import type { Handlers, PageProps } from "$fresh/server.ts";
 import { getCookies } from "https://deno.land/std@0.203.0/http/cookie.ts";

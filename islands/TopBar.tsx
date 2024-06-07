@@ -1,13 +1,9 @@
 import { useEffect, useRef, useState } from "preact/hooks";
-import IconDatabase from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/database.tsx";
-import IconArchiveFilled from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/archive-filled.tsx";
-import IconLogin from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/login.tsx";
 import IconLogout from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/logout.tsx";
 import IconMenu2 from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/menu-2.tsx";
 import IconHome from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/home.tsx";
 import IconTextScan2 from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/text-scan-2.tsx";
 import IconArrowBigLeft from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/arrow-big-left.tsx";
-import IconUserPlus from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/user-plus.tsx";
 import IconUsersGroup from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/users-group.tsx";
 import IconChevronDown from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/chevron-down.tsx";
 

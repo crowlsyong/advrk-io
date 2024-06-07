@@ -1,5 +1,4 @@
 import { useEffect, useState } from "preact/hooks";
-import { JSX } from "preact";
 
 type User = {
   id: string;

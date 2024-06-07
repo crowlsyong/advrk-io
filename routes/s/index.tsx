@@ -29,7 +29,7 @@ export const handler: Handlers<Data> = {
     return ctx.render({ isAllowed, urls });
   },
 
-  async POST(req, ctx) {
+  async POST(req) {
     const { url } = await req.json();
     await ShortenerService.create(url);
     const urls: Url[] = await ShortenerService.getAll();
@@ -39,7 +39,7 @@ export const handler: Handlers<Data> = {
     });
   },
 
-  async PUT(req, ctx) {
+  async PUT(req) {
     const { id, shortUrl } = await req.json();
     const success = await ShortenerService.update(id, shortUrl);
     if (success) {
@@ -53,7 +53,7 @@ export const handler: Handlers<Data> = {
     }
   },
 
-  async DELETE(req, ctx) {
+  async DELETE(req) {
     const { id } = await req.json();
     await ShortenerService.archive(id);
     const urls: Url[] = await ShortenerService.getAll();
@@ -69,7 +69,7 @@ export default function Home({ data }: PageProps<Data>) {
     <div>
       {data.isAllowed
         ? <UrlShortenerView initialData={data.urls ?? []} latency={0} />
-        : <Hero />}
+        : <Hero isLoggedIn={data.isAllowed} />}
     </div>
   );
 }

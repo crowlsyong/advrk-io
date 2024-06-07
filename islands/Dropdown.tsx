@@ -1,4 +1,3 @@
-import { h } from 'preact';
 import { useState } from 'preact/hooks';
 import IconDotsVertical from 'https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/dots-vertical.tsx';
 

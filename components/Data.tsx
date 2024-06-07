@@ -1,4 +1,3 @@
-import { h } from "preact";
 import { UrlSchema } from "../services/database.ts"; // Adjust the import path as needed
 
 interface DataComponentProps {

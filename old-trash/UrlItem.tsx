@@ -1,6 +1,6 @@
 // UrlItem.tsx
 
-import { useCallback, useRef, useState } from "preact/hooks";
+import { useRef, useState } from "preact/hooks";
 import IconQrcode from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/qrcode.tsx";
 import IconCopy from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/copy.tsx";
 import IconEdit from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/edit.tsx";

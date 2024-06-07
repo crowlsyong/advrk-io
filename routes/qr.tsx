@@ -1,4 +1,3 @@
-import { h } from "preact";
 import { Handlers, PageProps } from "$fresh/server.ts";
 import QRCode from "../islands/qrcode.tsx";
 
