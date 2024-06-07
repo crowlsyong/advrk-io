@@ -6,7 +6,7 @@ interface SearchProps {
   onSearch: (query: string) => void;
 }
 
-export default function Search({ searchUrl, searching, onSearch }: SearchProps) {
+export default function Search({ searchUrl, onSearch }: SearchProps) {
   const urlInput = useRef<HTMLInputElement>(null);
 
   const handleSearchUrl = async () => {

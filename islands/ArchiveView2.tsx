@@ -7,7 +7,7 @@ interface UrlEntry {
 }
 
 export default function ArchivesView2(props: { initialData: UrlEntry[] }) {
-  const [data, setData] = useState(props.initialData);
+  const [data] = useState(props.initialData);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const lastSelectedIndex = useRef<number | null>(null);
 

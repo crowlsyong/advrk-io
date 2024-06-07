@@ -2,14 +2,16 @@ import { Handlers, PageProps } from "$fresh/server.ts";
 import { ShortenerService } from "../services/shortener.ts"; // Ensure this path is correct
 
 export const handler: Handlers = {
-  async GET(req, ctx) {
+  async GET(_req, ctx) {
     const urls = await ShortenerService.getAll();
     return ctx.render({ urls });
   },
-  async POST(req, ctx) {
+  async POST(req, _ctx) {
     const form = await req.formData();
     const url = form.get("url") as string;
-    const shortUrl = await ShortenerService.create(url);
+    if (url) {
+      await ShortenerService.create(url);
+    }
     return new Response(null, {
       status: 303,
       headers: { Location: "/" },

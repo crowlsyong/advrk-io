@@ -3,11 +3,11 @@ import ArchivesView from "../../islands/ArchiveView.tsx";
 import { ShortenerService } from "../../services/shortener.ts";
 
 export const handler: Handlers = {
-  async GET(req, ctx) {
+  async GET(_req, ctx) {
     const urls = await ShortenerService.getAllArchived();
     return ctx.render({ urls });
   },
-  async DELETE(req, ctx) {
+  async DELETE(req, _ctx) {
     const { id } = await req.json();
     await ShortenerService.delete(id);
     const urls = await ShortenerService.getAllArchived();
@@ -16,7 +16,7 @@ export const handler: Handlers = {
       headers: { "Content-Type": "application/json" },
     });
   },
-  async PUT(req, ctx) {
+  async PUT(req, _ctx) {
     const { id } = await req.json();
     await ShortenerService.restore(id);
     const urls = await ShortenerService.getAllArchived();

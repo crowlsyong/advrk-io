@@ -130,10 +130,7 @@ export default function ArchivesView(
     setSelected(new Set());
   };
 
-  const hasDuplicateSelected = Array.from(selected).some((id) => {
-    const url = data.find((url) => url.id === id);
-    return url && duplicateUrls.has(url.shortUrl);
-  });
+
 
   const handleSearch = (query: string) => {
     const filtered = data.filter((url) =>
