@@ -10,7 +10,9 @@ export default function CreateUserForm({ onUserCreated }: CreateUserFormProps) {
   const [message, setMessage] = useState<string | undefined>(undefined);
   const [isSuccess, setIsSuccess] = useState<boolean>(false);
 
-  const handleSubmit = async (event: h.JSX.TargetedEvent<HTMLFormElement, Event>) => {
+  const handleSubmit = async (
+    event: h.JSX.TargetedEvent<HTMLFormElement, Event>,
+  ) => {
     event.preventDefault();
     const form = event.currentTarget;
     const formData = new FormData(form);
@@ -32,9 +34,15 @@ export default function CreateUserForm({ onUserCreated }: CreateUserFormProps) {
 
   return (
     <div>
-      <h1 class="text-2xl font-bold mb-4 text-center text-white">Create User</h1>
+      <h1 class="text-2xl font-bold mb-4 text-center text-white">
+        Create User
+      </h1>
       {message && (
-        <div class={`mb-4 p-2 text-center ${isSuccess ? "text-white bg-green-500" : "text-white bg-red-500"} rounded`}>
+        <div
+          class={`mb-4 p-2 text-center ${
+            isSuccess ? "text-white bg-green-500" : "text-white bg-red-500"
+          } rounded`}
+        >
           {message}
         </div>
       )}

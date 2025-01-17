@@ -17,5 +17,5 @@ export const handler: Handlers = {
         headers: { "Location": "/login" },
       });
     }
-  }
+  },
 };

@@ -1,5 +1,5 @@
 import { Handlers } from "$fresh/server.ts";
-import { kv, createUser, getUser } from "../../../services/database.ts";  // Adjust the import path if necessary
+import { createUser, getUser, kv } from "../../../services/database.ts"; // Adjust the import path if necessary
 
 export const handler: Handlers = {
   async GET() {
@@ -17,7 +17,7 @@ export const handler: Handlers = {
       return new Response("Internal Server Error", { status: 500 });
     }
   },
-  
+
   async POST(req) {
     try {
       const user = await req.json();
@@ -25,7 +25,11 @@ export const handler: Handlers = {
       if (existingUser) {
         return new Response("Username already exists", { status: 409 });
       }
-      const userId = await createUser(user.username, user.password, user.userType);
+      const userId = await createUser(
+        user.username,
+        user.password,
+        user.userType,
+      );
       const userKey = ["user", userId];
       const savedUser = (await kv.get(userKey)).value;
       if (!savedUser) {

@@ -1,5 +1,5 @@
 import { Handlers } from "$fresh/server.ts";
-import { kv, UserSchema, hashPassword } from "../../../services/database.ts";  // Adjust the import path if necessary
+import { hashPassword, kv, UserSchema } from "../../../services/database.ts"; // Adjust the import path if necessary
 
 export const handler: Handlers<UserSchema | string> = {
   async GET(_req, ctx) {
@@ -23,8 +23,14 @@ export const handler: Handlers<UserSchema | string> = {
       return new Response(`No user with id ${id} found`, { status: 404 });
     }
     const hashedPassword = await hashPassword(password); // Hash the new password
-    const updatedUser: UserSchema = { id, username, password: hashedPassword, userType };
-    const ok = await kv.atomic().check(userRes).set(userKey, updatedUser).commit();
+    const updatedUser: UserSchema = {
+      id,
+      username,
+      password: hashedPassword,
+      userType,
+    };
+    const ok = await kv.atomic().check(userRes).set(userKey, updatedUser)
+      .commit();
     if (!ok) throw new Error("Something went wrong.");
     return new Response(JSON.stringify(updatedUser), {
       headers: { "Content-Type": "application/json" },

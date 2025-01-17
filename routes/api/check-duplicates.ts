@@ -1,7 +1,10 @@
 import { HandlerContext } from "$fresh/server.ts";
 import { isDuplicateShortUrl } from "../../services/database.ts";
 
-export const handler = async (req: Request, _ctx: HandlerContext): Promise<Response> => {
+export const handler = async (
+  req: Request,
+  _ctx: HandlerContext,
+): Promise<Response> => {
   if (req.method !== "POST") {
     return new Response("Method Not Allowed", { status: 405 });
   }

@@ -1,4 +1,4 @@
-import { useState, useRef } from "preact/hooks";
+import { useRef, useState } from "preact/hooks";
 
 interface UrlEntry {
   id: string;

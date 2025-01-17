@@ -27,5 +27,5 @@
     "axios-web": "https://esm.sh/axios@1.3.2?target=es2022"
   },
   "compilerOptions": { "jsx": "react-jsx", "jsxImportSource": "preact" },
-  "nodeModulesDir": true
+  "nodeModulesDir": "auto"
 }

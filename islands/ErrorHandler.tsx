@@ -1,5 +1,5 @@
 // /islands/ErrorHandler.tsx
-import { useState, useEffect } from "preact/hooks";
+import { useEffect, useState } from "preact/hooks";
 import Notification from "./Notification.tsx"; // Import the Notification component
 
 interface ErrorHandlerProps {
@@ -15,7 +15,9 @@ const ErrorHandler = ({ initialError }: ErrorHandlerProps) => {
     }
   }, [initialError]);
 
-  return error ? <Notification message={error} onClose={() => setError('')} /> : null;
+  return error
+    ? <Notification message={error} onClose={() => setError("")} />
+    : null;
 };
 
 export default ErrorHandler;

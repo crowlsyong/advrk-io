@@ -1,7 +1,11 @@
 // api/login.ts
 import { Handlers } from "$fresh/server.ts";
 import { setCookie } from "https://deno.land/std@0.203.0/http/cookie.ts";
-import { getUser, saveSession, comparePassword } from "../../services/database.ts";
+import {
+  comparePassword,
+  getUser,
+  saveSession,
+} from "../../services/database.ts";
 
 export const handler: Handlers = {
   async POST(req) {

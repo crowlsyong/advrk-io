@@ -77,7 +77,9 @@ export default function Home({ data }: PageProps<Data>) {
     <div class="md:bg-black bg-gray-900 min-h-screen flex items-center justify-center p-4">
       <div class="flex flex-col md:flex-row max-w-4xl w-full">
         <div class="flex-1 flex flex-col text-center justify-center mb-8 md:mb-0">
-          <h1 class="font-bold text-red-600 text-4xl md:text-6xl mb-4">advkr.io</h1>
+          <h1 class="font-bold text-red-600 text-4xl md:text-6xl mb-4">
+            advkr.io
+          </h1>
           <p class="text-gray-300 text-xl md:text-2xl">
             Simple URL shortener.
           </p>
@@ -88,12 +90,13 @@ export default function Home({ data }: PageProps<Data>) {
           </div>
           {!data.isAllowed ? <Login /> : (
             <div class="text-center">
-              <a href="/logout" class="text-blue-500 hover:text-blue-400">Logout</a>
+              <a href="/logout" class="text-blue-500 hover:text-blue-400">
+                Logout
+              </a>
             </div>
           )}
           {data.error && <ErrorHandler initialError={data.error} />}
           <div class="mt-4 text-gray-400 text-center">
-            
           </div>
         </div>
       </div>

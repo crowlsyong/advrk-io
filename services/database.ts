@@ -182,7 +182,10 @@ export async function hashPassword(password: string): Promise<string> {
 }
 
 // Compare the password with the stored hash
-export async function comparePassword(password: string, hash: string): Promise<boolean> {
+export async function comparePassword(
+  password: string,
+  hash: string,
+): Promise<boolean> {
   const hashedPassword = await hashPassword(password);
   return hashedPassword === hash;
 }
@@ -190,11 +193,16 @@ export async function comparePassword(password: string, hash: string): Promise<b
 export async function createUser(
   username: string,
   password: string,
-  userType: "admin" | "sudo" | "user" = "user"
+  userType: "admin" | "sudo" | "user" = "user",
 ): Promise<string> {
   const id = generateShortId(8); // Generate unique ID for the user
   const hashedPassword = await hashPassword(password); // Hash the password
-  const userEntry: UserSchema = { id, username, password: hashedPassword, userType };
+  const userEntry: UserSchema = {
+    id,
+    username,
+    password: hashedPassword,
+    userType,
+  };
   await kv.set(["user", id], userEntry);
   return id; // Return the user ID
 }
@@ -228,7 +236,9 @@ async function listAllUsers() {
   const it = kv.list({ prefix: ["user"] });
   for await (const entry of it) {
     const user = entry.value as UserSchema;
-    console.log(`ID: ${user.id}, Username: ${user.username}, Password: ${user.password}, UserType: ${user.userType}`);
+    console.log(
+      `ID: ${user.id}, Username: ${user.username}, Password: ${user.password}, UserType: ${user.userType}`,
+    );
   }
 }
 
@@ -277,6 +287,5 @@ async function initializeSuperUser() {
 }
 
 await initializeSuperUser();
-
 
 await initializeSuperUser();

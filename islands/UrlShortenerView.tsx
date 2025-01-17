@@ -121,7 +121,8 @@ export default function UrlShortenerView(
   const handleInput = (event: Event) => {
     const query = (event.target as HTMLInputElement).value.toLowerCase();
     const filtered = data.filter((url) =>
-      url.originalUrl.toLowerCase().includes(query) || url.shortUrl.toLowerCase().includes(query)
+      url.originalUrl.toLowerCase().includes(query) ||
+      url.shortUrl.toLowerCase().includes(query)
     );
     setFilteredData(filtered);
   };
@@ -131,7 +132,9 @@ export default function UrlShortenerView(
       <div class="w-full max-w-4xl mx-auto  bg-gray-800 border border-gray-700 rounded p-4">
         <div class="flex flex-col pb-4">
           <div class="flex flex-row gap-2 items-center">
-            <h1 class="font-bold text-3xl sm:text-xl m-4 text-white">🤏 URL Shortener</h1>
+            <h1 class="font-bold text-3xl sm:text-xl m-4 text-white">
+              🤏 URL Shortener
+            </h1>
             <a
               href="/s/archive"
               class="px-1 py-1 text-gray-400 hover:bg-gray-700 hover:text-white rounded flex gap-1 text-xs ml-auto"
@@ -171,7 +174,8 @@ export default function UrlShortenerView(
             shortUrl={qrCodeUrl}
             originalUrl={data.find((entry) => entry.shortUrl === qrCodeUrl)
               ?.originalUrl || ""}
-            onClose={() => setQrCodeUrl(null)}
+            onClose={() =>
+              setQrCodeUrl(null)}
           />
         )}
 

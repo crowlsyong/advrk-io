@@ -91,7 +91,7 @@ const UrlItem = ({
 
   const getShortenedUrl = (url: string) => {
     if (url.length > 40) {
-      return url.slice(0, 17) + '...';
+      return url.slice(0, 17) + "...";
     }
     return url;
   };
@@ -134,13 +134,15 @@ const UrlItem = ({
               )}
             </div>
           )}
-          <a 
+          <a
             href={url.originalUrl}
             class="text-xs opacity-50 leading-loose hover:text-blue-500 hover:underline"
             target="_blank"
             rel="noopener noreferrer"
           >
-            {url.originalUrl.length > 40 ? url.originalUrl.slice(0, 40) + '...' : url.originalUrl}
+            {url.originalUrl.length > 40
+              ? url.originalUrl.slice(0, 40) + "..."
+              : url.originalUrl}
           </a>
 
           {editing && (

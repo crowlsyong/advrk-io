@@ -8,7 +8,7 @@ interface Data {
 }
 
 export const handler: Handlers<Data> = {
-    GET(req, ctx) {
+  GET(req, ctx) {
     const cookies = getCookies(req.headers);
     const isAllowed = cookies.auth === "bar";
 
@@ -28,7 +28,6 @@ export default function App({ Component }: PageProps<Data>) {
       <body class="bg-gray-900">
         <TopBar />
         <Component />
-        
       </body>
     </html>
   );

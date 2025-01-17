@@ -72,10 +72,14 @@ export default function ArchivesView(
       });
 
       const pageDuplicates = new Set(
-        selectedUrls.filter((item, index) => selectedUrls.indexOf(item) !== index)
+        selectedUrls.filter((item, index) =>
+          selectedUrls.indexOf(item) !== index
+        ),
       ).size > 0;
 
-      setDuplicatesSelected(hasDuplicates || archiveDuplicates || pageDuplicates);
+      setDuplicatesSelected(
+        hasDuplicates || archiveDuplicates || pageDuplicates,
+      );
 
       return newSelected;
     });
@@ -129,8 +133,6 @@ export default function ArchivesView(
   const deselectAll = () => {
     setSelected(new Set());
   };
-
-
 
   const handleSearch = (query: string) => {
     const filtered = data.filter((url) =>

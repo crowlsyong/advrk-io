@@ -8,7 +8,7 @@ on:
 
 permissions:
   contents: read
-  id-token: write  # Needed for auth with Deno Deploy
+  id-token: write # Needed for auth with Deno Deploy
 
 jobs:
   test:

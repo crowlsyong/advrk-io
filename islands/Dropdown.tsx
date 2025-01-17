@@ -1,8 +1,8 @@
-import { useState } from 'preact/hooks';
-import IconDotsVertical from 'https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/dots-vertical.tsx';
+import { useState } from "preact/hooks";
+import IconDotsVertical from "https://deno.land/x/tabler_icons_tsx@0.0.5/tsx/dots-vertical.tsx";
 
 function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(' ');
+  return classes.filter(Boolean).join(" ");
 }
 
 interface DropdownProps {
@@ -11,7 +11,9 @@ interface DropdownProps {
   onArchive: () => void;
 }
 
-export default function Dropdown({ onEdit, onGenerateQrCode, onArchive }: DropdownProps) {
+export default function Dropdown(
+  { onEdit, onGenerateQrCode, onArchive }: DropdownProps,
+) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -21,7 +23,10 @@ export default function Dropdown({ onEdit, onGenerateQrCode, onArchive }: Dropdo
           onClick={() => setOpen(!open)}
           className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-gray-800 px-3 py-2 text-sm font-semibold text-white shadow-sm  hover:bg-gray-700"
         >
-          <IconDotsVertical className="h-5 w-5 text-gray-400" aria-hidden="true" />
+          <IconDotsVertical
+            className="h-5 w-5 text-gray-400"
+            aria-hidden="true"
+          />
         </button>
       </div>
 
@@ -29,25 +34,34 @@ export default function Dropdown({ onEdit, onGenerateQrCode, onArchive }: Dropdo
         <div className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-gray-800 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
           <div className="py-1">
             <button
-              onClick={() => { onEdit(); setOpen(false); }}
+              onClick={() => {
+                onEdit();
+                setOpen(false);
+              }}
               className={classNames(
-                'block px-4 py-2 text-sm w-full text-left text-gray-300 hover:bg-gray-700'
+                "block px-4 py-2 text-sm w-full text-left text-gray-300 hover:bg-gray-700",
               )}
             >
               Edit
             </button>
             <button
-              onClick={() => { onGenerateQrCode(); setOpen(false); }}
+              onClick={() => {
+                onGenerateQrCode();
+                setOpen(false);
+              }}
               className={classNames(
-                'block px-4 py-2 text-sm w-full text-left text-gray-300 hover:bg-gray-700'
+                "block px-4 py-2 text-sm w-full text-left text-gray-300 hover:bg-gray-700",
               )}
             >
               Generate QR Code
             </button>
             <button
-              onClick={() => { onArchive(); setOpen(false); }}
+              onClick={() => {
+                onArchive();
+                setOpen(false);
+              }}
               className={classNames(
-                'block px-4 py-2 text-sm w-full text-left text-gray-300 hover:bg-gray-700'
+                "block px-4 py-2 text-sm w-full text-left text-gray-300 hover:bg-gray-700",
               )}
             >
               Archive

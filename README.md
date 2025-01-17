@@ -1,13 +1,18 @@
 # advkr-io
 
-advkr-io is a simple and lightweight URL shortener built using the Deno Fresh framework and Deno KV. This project aims to provide a cost-effective solution for URL shortening while offering additional features such as QR code generation.
+advkr-io is a simple and lightweight URL shortener built using the Deno Fresh
+framework and Deno KV. This project aims to provide a cost-effective solution
+for URL shortening while offering additional features such as QR code
+generation.
 
 ## Features
 
 - **URL Shortening**: Easily shorten long URLs.
 - **QR Code Generation**: Automatically generate QR codes for shortened URLs.
-- **Search Functionality**: Filter and search through shortened URLs based on user input.
-- **Lightweight**: Designed to be efficient and cost-effective in terms of database usage.
+- **Search Functionality**: Filter and search through shortened URLs based on
+  user input.
+- **Lightweight**: Designed to be efficient and cost-effective in terms of
+  database usage.
 
 ## Getting Started
 
@@ -18,24 +23,21 @@ advkr-io is a simple and lightweight URL shortener built using the Deno Fresh fr
 
 ### Installation
 
-1. Clone the repository:
-   \`\`\`bash
-   git clone https://github.com/crowlsyong/advrk-io.git
-   cd advkr-io
-   \`\`\`
+1. Clone the repository: \`\`\`bash git clone
+   https://github.com/crowlsyong/advrk-io.git cd advkr-io \`\`\`
 
-2. Start the development server:
-   \`\`\`bash
-   deno task start
-   \`\`\`
+2. Start the development server: \`\`\`bash deno task start \`\`\`
 
 ### Deployment
 
-This project uses Deno Deploy and Cloudflare for deployment. Follow these steps to set it up:
+This project uses Deno Deploy and Cloudflare for deployment. Follow these steps
+to set it up:
 
 1. Deploy the project on [dash.deno.dev](https://dash.deno.dev/).
-2. In the project deployment settings on dash.deno.dev, get the DNS information from the domain area.
-3. Configure your DNS to use custom settings and update it with the DNS info obtained from dash.deno.dev.
+2. In the project deployment settings on dash.deno.dev, get the DNS information
+   from the domain area.
+3. Configure your DNS to use custom settings and update it with the DNS info
+   obtained from dash.deno.dev.
 
 ### Project Structure
 
@@ -56,15 +58,20 @@ This project uses Deno Deploy and Cloudflare for deployment. Follow these steps 
 
 ### Search Functionality
 
-To search for a specific URL, use the search bar on the main page. The search functionality filters the list of shortened URLs based on the input provided.
+To search for a specific URL, use the search bar on the main page. The search
+functionality filters the list of shortened URLs based on the input provided.
 
 ### Deno KV
 
-This project leverages Deno KV for efficient and cost-effective data storage. Special thanks to the To-Do list example that helped inspire and kickstart this project.
+This project leverages Deno KV for efficient and cost-effective data storage.
+Special thanks to the To-Do list example that helped inspire and kickstart this
+project.
 
 ### Continuous Integration
 
-This project uses GitHub Actions for continuous integration. A build step is included in the GitHub Actions workflow to ensure that the project is built and tested before deployment.
+This project uses GitHub Actions for continuous integration. A build step is
+included in the GitHub Actions workflow to ensure that the project is built and
+tested before deployment.
 
 ### Contributing
 
@@ -79,7 +86,8 @@ We welcome contributions! Please follow these steps to contribute:
 
 ### License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file
+for details.
 
 ### Acknowledgments
 

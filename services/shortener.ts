@@ -1,4 +1,15 @@
-import { kv, createUrlEntry, getAllUrls, updateUrl, archiveUrl, UrlSchema, getAllArchivedUrls, deleteUrl, getUrlEntry, getShortUrlEntry } from "./database.ts";
+import {
+  archiveUrl,
+  createUrlEntry,
+  deleteUrl,
+  getAllArchivedUrls,
+  getAllUrls,
+  getShortUrlEntry,
+  getUrlEntry,
+  kv,
+  updateUrl,
+  UrlSchema,
+} from "./database.ts";
 
 export class ShortenerService {
   static async create(originalUrl: string): Promise<string> {
@@ -13,7 +24,9 @@ export class ShortenerService {
     return await getUrlEntry(id);
   }
 
-  static async getShortUrlEntry(shortUrl: string): Promise<UrlSchema | undefined> {
+  static async getShortUrlEntry(
+    shortUrl: string,
+  ): Promise<UrlSchema | undefined> {
     return await getShortUrlEntry(shortUrl);
   }
 
@@ -38,9 +51,11 @@ export class ShortenerService {
     if (!entry.value) {
       return false;
     }
-    const updatedEntry: UrlSchema = { ...entry.value as UrlSchema, archived: false };
+    const updatedEntry: UrlSchema = {
+      ...entry.value as UrlSchema,
+      archived: false,
+    };
     await kv.set(["url", id], updatedEntry);
     return true;
   }
 }
-

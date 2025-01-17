@@ -28,8 +28,7 @@ function UrlItem({
   updateUrl,
   archiveUrl,
   generateQrCode,
-  qrCodeUrl
-
+  qrCodeUrl,
 }: UrlItemProps) {
   const [editing, setEditing] = useState(false);
   const [newShortUrlEnding, setNewShortUrlEnding] = useState(
@@ -109,14 +108,14 @@ function UrlItem({
   };
 
   return (
-   <div
-    class={`flex flex-col sm:flex-row p-2 sm:p-4 gap-2 sm:gap-4 border-b border-gray-700 items-center ${
-      qrCodeUrl === url.shortUrl ? "bg-gray-600" : "bg-gray-800"
-    }`}
-  >
-    <div class="flex flex-row sm:flex-row w-full gap-2 tems-center justify-between">
-    <div class="flex flex-col font-mono text-xs sm:text-sm  items-start">
-        {!editing && (
+    <div
+      class={`flex flex-col sm:flex-row p-2 sm:p-4 gap-2 sm:gap-4 border-b border-gray-700 items-center ${
+        qrCodeUrl === url.shortUrl ? "bg-gray-600" : "bg-gray-800"
+      }`}
+    >
+      <div class="flex flex-row sm:flex-row w-full gap-2 tems-center justify-between">
+        <div class="flex flex-col font-mono text-xs sm:text-sm  items-start">
+          {!editing && (
             <div class="flex items-center">
               <a
                 href={url.shortUrl}
@@ -157,7 +156,9 @@ function UrlItem({
           <div class="text-xxs text-gray-500">Created at: {url.timestamp}</div>
           {editing && (
             <>
-              <span class="text-gray-400">{url.shortUrl.split("/").slice(0, -1).join("/")}/</span>
+              <span class="text-gray-400">
+                {url.shortUrl.split("/").slice(0, -1).join("/")}/
+              </span>
               <input
                 class={`border rounded w-full py-1 px-2 mr-4 bg-gray-700 text-white ${
                   error ? "border-red-600" : ""
